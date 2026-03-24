@@ -1,0 +1,169 @@
+{
+    "paper_id": "matematik-tahun4-pksr1",
+    "questions": [
+        {
+            "id": "S1",
+            "type": "mcq",
+            "correct": "D",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "Digit 4 berada pada nilai tempat ribuan. 4 × 1000 = 4 000."
+        },
+        {
+            "id": "S2",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "Bahagian Matematik dalam carta pai ialah 35%."
+        },
+        {
+            "id": "S3",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "1 248 + 976 = 2 224."
+        },
+        {
+            "id": "S4",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "2/3 ≈ 0.667 adalah yang paling besar berbanding 1/2 = 0.5, 3/8 = 0.375, dan 5/12 ≈ 0.417."
+        },
+        {
+            "id": "S5",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "Dari 07:30 hingga 13:30 = 6 jam."
+        },
+        {
+            "id": "S6",
+            "type": "mcq",
+            "correct": "D",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "RM 1.50 × 8 = RM 12.00."
+        },
+        {
+            "id": "S7",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "Perimeter = 2 × (12 + 5) = 2 × 17 = 34 cm."
+        },
+        {
+            "id": "S8",
+            "type": "mcq",
+            "correct": "B",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "4.65 + 2.80 = 7.45."
+        },
+        {
+            "id": "S9",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "3/4 + 1/4 = 4/4 = 1 liter."
+        },
+        {
+            "id": "S10",
+            "type": "mcq",
+            "correct": "C",
+            "marks": 1,
+            "auto_score": true,
+            "explanation": "30% × 200 = 60 ekor kambing."
+        },
+        {
+            "id": "S11",
+            "type": "fill",
+            "correct": "216",
+            "marks": 2,
+            "auto_score": true,
+            "explanation": "27 × 8 = 216."
+        },
+        {
+            "id": "S12",
+            "type": "fill",
+            "correct": "0.75",
+            "marks": 2,
+            "auto_score": true,
+            "explanation": "3 ÷ 4 = 0.75."
+        },
+        {
+            "id": "S13",
+            "type": "fill",
+            "correct": "2659 | 2 659",
+            "marks": 2,
+            "auto_score": true,
+            "explanation": "5 008 − 2 349 = 2 659."
+        },
+        {
+            "id": "S14",
+            "type": "fill",
+            "correct": "30",
+            "marks": 2,
+            "auto_score": true,
+            "explanation": "Luas segi tiga = 1/2 × tapak × tinggi = 1/2 × 10 × 6 = 30 cm²."
+        },
+        {
+            "id": "S15",
+            "type": "fill",
+            "correct": "3 | 3.0",
+            "marks": 2,
+            "auto_score": true,
+            "explanation": "0.6 × 5 = 3.0."
+        },
+        {
+            "id": "S16",
+            "type": "short",
+            "correct": "40",
+            "marks": 3,
+            "auto_score": true,
+            "explanation": "480 ÷ 12 = 40 biji gula-gula setiap kanak-kanak."
+        },
+        {
+            "id": "S17",
+            "type": "short",
+            "correct": "62.30 | RM 62.30",
+            "marks": 3,
+            "auto_score": true,
+            "explanation": "Kos 3 baju = 3 × RM 45.90 = RM 137.70. Baki = RM 200.00 − RM 137.70 = RM 62.30."
+        },
+        {
+            "id": "S18",
+            "type": "short",
+            "correct": "193 | 193 buku",
+            "marks": 3,
+            "auto_score": true,
+            "explanation": "Jumlah = 145 + 238 + 197 = 580. Purata = 580 ÷ 3 = 193.33 ≈ 193 buku."
+        },
+        {
+            "id": "S19",
+            "type": "essay",
+            "correct": "(a) 46 meter  (b) RM 552.00",
+            "marks": 4,
+            "auto_score": false,
+            "rubric": [
+                {
+                    "part": "a",
+                    "marks": 2,
+                    "criteria": "Perimeter = 2 × (15 + 8) = 2 × 23 = 46 meter. Award 1 mark for correct formula, 1 mark for correct answer."
+                },
+                {
+                    "part": "b",
+                    "marks": 2,
+                    "criteria": "Kos = 46 × RM 12.00 = RM 552.00. Award 1 mark for correct method using answer from (a), 1 mark for correct final amount."
+                }
+            ],
+            "explanation": "(a) Perimeter = 2 × (15 + 8) = 46 m. (b) Kos = 46 × RM 12.00 = RM 552.00."
+        }
+    ]
+}

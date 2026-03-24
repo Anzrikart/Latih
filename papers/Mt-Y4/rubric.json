@@ -1,0 +1,205 @@
+{
+    "paper_id": "matematik-tahun4-pksr1",
+    "title": "Matematik Tahun 4 — PKSR 1",
+    "subject": "Matematik",
+    "year": 4,
+    "duration_minutes": 40,
+    "total_marks": 30,
+    "difficulty": "sederhana",
+    "tags": [
+        "nombor bulat",
+        "pecahan",
+        "perpuluhan",
+        "operasi asas",
+        "perimeter",
+        "luas",
+        "masa",
+        "wang",
+        "carta pai",
+        "purata"
+    ],
+    "sections": [
+        {
+            "name": "Bahagian A",
+            "type": "mcq",
+            "questions": [
+                "S1",
+                "S2",
+                "S3",
+                "S4",
+                "S5",
+                "S6",
+                "S7",
+                "S8",
+                "S9",
+                "S10"
+            ],
+            "marks_per_question": 1,
+            "total_marks": 10
+        },
+        {
+            "name": "Bahagian B",
+            "type": "fill",
+            "questions": [
+                "S11",
+                "S12",
+                "S13",
+                "S14",
+                "S15"
+            ],
+            "marks_per_question": 2,
+            "total_marks": 10
+        },
+        {
+            "name": "Bahagian C",
+            "type": "short_and_essay",
+            "questions": [
+                "S16",
+                "S17",
+                "S18",
+                "S19"
+            ],
+            "total_marks": 10
+        }
+    ],
+    "topics_covered": [
+        {
+            "topic": "Nilai tempat",
+            "questions": [
+                "S1"
+            ],
+            "kssr_standard": "4.1.1"
+        },
+        {
+            "topic": "Carta pai & peratus",
+            "questions": [
+                "S2",
+                "S10"
+            ],
+            "kssr_standard": "4.9.1"
+        },
+        {
+            "topic": "Penambahan",
+            "questions": [
+                "S3",
+                "S11"
+            ],
+            "kssr_standard": "4.2.1"
+        },
+        {
+            "topic": "Penolakan",
+            "questions": [
+                "S13"
+            ],
+            "kssr_standard": "4.2.2"
+        },
+        {
+            "topic": "Pendaraban",
+            "questions": [
+                "S6",
+                "S11",
+                "S15"
+            ],
+            "kssr_standard": "4.2.3"
+        },
+        {
+            "topic": "Pembahagian",
+            "questions": [
+                "S16"
+            ],
+            "kssr_standard": "4.2.4"
+        },
+        {
+            "topic": "Pecahan",
+            "questions": [
+                "S4",
+                "S9",
+                "S12"
+            ],
+            "kssr_standard": "4.4.1"
+        },
+        {
+            "topic": "Perpuluhan",
+            "questions": [
+                "S8",
+                "S12",
+                "S15"
+            ],
+            "kssr_standard": "4.5.1"
+        },
+        {
+            "topic": "Masa & waktu",
+            "questions": [
+                "S5"
+            ],
+            "kssr_standard": "4.6.1"
+        },
+        {
+            "topic": "Wang",
+            "questions": [
+                "S6",
+                "S17"
+            ],
+            "kssr_standard": "4.7.1"
+        },
+        {
+            "topic": "Perimeter",
+            "questions": [
+                "S7",
+                "S19"
+            ],
+            "kssr_standard": "4.8.1"
+        },
+        {
+            "topic": "Luas",
+            "questions": [
+                "S14"
+            ],
+            "kssr_standard": "4.8.2"
+        },
+        {
+            "topic": "Purata",
+            "questions": [
+                "S18"
+            ],
+            "kssr_standard": "4.9.2"
+        }
+    ],
+    "grading": {
+        "A_plus": {
+            "min": 27,
+            "max": 30,
+            "label": "Cemerlang"
+        },
+        "A": {
+            "min": 24,
+            "max": 26,
+            "label": "Cemerlang"
+        },
+        "B": {
+            "min": 21,
+            "max": 23,
+            "label": "Kepujian"
+        },
+        "C": {
+            "min": 18,
+            "max": 20,
+            "label": "Lulus"
+        },
+        "D": {
+            "min": 15,
+            "max": 17,
+            "label": "Lulus"
+        },
+        "E": {
+            "min": 0,
+            "max": 14,
+            "label": "Perlu Usaha"
+        }
+    },
+    "created": "2026-03-24",
+    "author": "Antigravity / Cikgu Haru",
+    "version": "1.0",
+    "published": false,
+    "notes": "Soalan meliputi semua topik utama KSSR Matematik Tahun 4 Semester 1. Bahagian C soalan S19 perlu semakan guru kerana melibatkan jalan kerja dua bahagian."
+}
