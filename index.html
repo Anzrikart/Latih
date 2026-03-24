@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TestPad — Paper Preview</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE6;
+    --border: #DDD9D0;
+    --text: #1A1814;
+    --text2: #6B6760;
+    --text3: #9B978F;
+    --accent: #2B5CE6;
+    --accent-soft: #EBF0FD;
+    --green: #1A7A4A;
+    --green-soft: #E6F5EE;
+    --red: #C0392B;
+    --red-soft: #FDEEEC;
+    --amber: #B45309;
+    --amber-soft: #FEF3C7;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ── */
+  .app { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; height: 100vh; }
+
+  /* ── Header ── */
+  .header {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 54px;
+  }
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--accent);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--text2); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 400; margin-left: 6px; }
+  .header-tabs { display: flex; gap: 2px; margin-left: auto; }
+  .tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    transition: all 0.15s;
+  }
+  .tab.active { background: var(--accent-soft); color: var(--accent); }
+  .tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+  .btn-run {
+    padding: 6px 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-run:hover { opacity: 0.88; }
+  .btn-run:active { transform: scale(0.97); }
+
+  /* ── Panes ── */
+  .pane {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+  .pane-header {
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .pane-header .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot-blue { background: var(--accent); }
+  .dot-green { background: var(--green); }
+
+  /* ── Editor ── */
+  #md-editor {
+    flex: 1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.75;
+    padding: 20px;
+    border: none;
+    outline: none;
+    resize: none;
+    background: var(--surface);
+    color: var(--text);
+    overflow-y: auto;
+  }
+
+  /* ── Preview pane ── */
+  .preview-pane {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .preview-scroll { flex: 1; overflow-y: auto; padding: 20px; }
+
+  /* ── Paper render styles ── */
+  .paper-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .paper-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .paper-meta { font-size: 12px; color: var(--text3); display: flex; gap: 16px; flex-wrap: wrap; }
+  .paper-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .progress-bar-wrap { margin-top: 12px; }
+  .progress-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .progress-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  /* ── Question block ── */
+  .q-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+  }
+  .q-block.answered { border-color: #93C5A0; }
+  .q-block.correct  { border-color: var(--green); background: var(--green-soft); }
+  .q-block.wrong    { border-color: var(--red); background: var(--red-soft); }
+
+  .q-num-row {
+    padding: 10px 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .q-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .q-marks { font-size: 11px; color: var(--text3); margin-left: auto; }
+  .q-body { padding: 10px 16px 14px; }
+
+  /* rendered markdown inside question */
+  .q-body p { margin-bottom: 8px; font-size: 14.5px; }
+  .q-body p:last-child { margin-bottom: 0; }
+  .q-body strong { font-weight: 600; }
+  .q-body .mermaid { margin: 10px 0; }
+
+  /* ── MCQ options ── */
+  .options { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 14px;
+  }
+  .option:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .option.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .option.correct-ans { border-color: var(--green); background: var(--green-soft); }
+  .option.wrong-ans   { border-color: var(--red); background: var(--red-soft); }
+  .option input[type=radio] { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; }
+  .option-letter {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text3);
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ── Short answer input ── */
+  .short-input {
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .short-input:focus { border-color: var(--accent); background: var(--surface); }
+
+  /* ── Essay textarea ── */
+  .essay-input {
+    margin-top: 10px;
+    width: 100%;
+    min-height: 90px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+  .essay-input:focus { border-color: var(--accent); background: var(--surface); }
+
+  /* ── Fill blank ── */
+  .fill-blank-wrap { display: inline; }
+  .blank-input {
+    display: inline-block;
+    width: 120px;
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    padding: 2px 4px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+    text-align: center;
+    margin: 0 4px;
+  }
+
+  /* ── Result badge ── */
+  .result-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+  .badge-correct { background: var(--green-soft); color: var(--green); }
+  .badge-wrong   { background: var(--red-soft);   color: var(--red); }
+  .badge-pending { background: var(--amber-soft);  color: var(--amber); }
+  .correct-hint  { font-size: 12px; color: var(--green); margin-top: 4px; }
+
+  /* ── Score panel ── */
+  .score-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .score-panel.show { display: block; }
+  .score-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .score-label { font-size: 13px; color: var(--text3); margin-top: 4px; }
+  .score-grade {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+
+  /* ── Submit bar ── */
+  .submit-bar {
+    flex-shrink: 0;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .answered-count { font-size: 13px; color: var(--text2); flex: 1; }
+  .btn-submit {
+    padding: 8px 22px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-submit:hover { opacity: 0.85; }
+  .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-reset {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .btn-reset:hover { border-color: var(--text2); color: var(--text); }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Sound indicator ── */
+  .sound-ping {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--text);
+    color: white;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.2s;
+    pointer-events: none;
+  }
+  .sound-ping.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">TestPad <span>v0.1 — Paper Preview</span></div>
+    <div class="header-tabs">
+      <button class="tab active" onclick="switchTab('split')">Split</button>
+      <button class="tab" onclick="switchTab('editor')">Editor</button>
+      <button class="tab" onclick="switchTab('preview')">Preview</button>
+    </div>
+    <button class="btn-run" onclick="renderPaper()">
+      ▶ Render
+    </button>
+  </header>
+
+  <!-- Left: Editor -->
+  <div class="pane" id="pane-editor">
+    <div class="pane-header"><span class="dot dot-blue"></span> question.md</div>
+    <textarea id="md-editor" spellcheck="false"></textarea>
+  </div>
+
+  <!-- Right: Preview -->
+  <div class="preview-pane" id="pane-preview">
+    <div class="pane-header"><span class="dot dot-green"></span> Student view</div>
+    <div class="preview-scroll" id="preview-area">
+      <div style="color:var(--text3);font-size:13px;padding:40px 20px;text-align:center;">
+        Click <strong>▶ Render</strong> to preview the paper.
+      </div>
+    </div>
+    <div class="submit-bar">
+      <span class="answered-count" id="answered-count">—</span>
+      <button class="btn-reset" onclick="resetPaper()">Reset</button>
+      <button class="btn-submit" id="btn-submit" onclick="submitPaper()" disabled>Submit</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="sound-ping" id="sound-ping"></div>
+
+<script>
+mermaid.initialize({ startOnLoad: false, theme: 'neutral', fontFamily: 'DM Sans, sans-serif' });
+
+/* ── Default sample paper ── */
+const SAMPLE_MD = `---
+title: Matematik Tahun 4 — Ujian Pecahan
+subject: Matematik
+year: 4
+duration: 30
+total_marks: 10
+---
+
+## Bahagian A: Pilihan Berganda
+
+**S1** [mcq:2]
+Rajah di bawah menunjukkan taburan buah-buahan dalam sebuah bakul.
+
+\`\`\`mermaid
+pie title Buah-buahan dalam bakul
+  "Epal" : 30
+  "Oren" : 45
+  "Pisang" : 25
+\`\`\`
+
+Berapakah peratusan Oren dalam bakul tersebut?
+
+- [ ] A. 30%
+- [ ] B. 25%
+- [ ] C. 45%
+- [ ] D. 50%
+
+**JAWAPAN**: C
+
+---
+
+**S2** [mcq:2]
+Nilai bagi **3/4 + 1/8** ialah...
+
+- [ ] A. 4/12
+- [ ] B. 7/8
+- [ ] C. 4/8
+- [ ] D. 1/2
+
+**JAWAPAN**: B
+
+---
+
+## Bahagian B: Isian Tempat Kosong
+
+**S3** [fill:2]
+Tulis dalam perkataan: **0.75** = ___BLANK___ perpuluhan
+
+**JAWAPAN**: sifar perpuluhan tujuh lima | 0.75
+
+---
+
+**S4** [fill:2]
+Selesaikan: **12 ÷ 4 =** ___BLANK___
+
+**JAWAPAN**: 3
+
+---
+
+## Bahagian C: Jawapan Pendek
+
+**S5** [short:2]
+Seorang peniaga mempunyai 48 biji telur. Dia menjual **3/4** daripada telur itu. Berapakah bilangan telur yang tinggal?
+
+**JAWAPAN**: 12
+`;
+
+document.getElementById('md-editor').value = SAMPLE_MD;
+
+/* ── Answer key parsed from markdown ── */
+let answerKey = {};
+let userAnswers = {};
+let submitted = false;
+let questionCount = 0;
+
+/* ── Audio ── */
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+function beep(freq, dur, type='sine', vol=0.15) {
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+  o.start(); o.stop(ctx.currentTime + dur);
+}
+function playCorrect() { beep(880, 0.08); setTimeout(()=>beep(1100,0.1),90); }
+function playWrong()   { beep(220, 0.18,'sawtooth',0.08); }
+function playSubmit()  { [523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,0.12),i*80)); }
+function ping(msg)     {
+  const el = document.getElementById('sound-ping');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 1500);
+}
+
+/* ── Tab switching ── */
+function switchTab(mode) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  const ep = document.getElementById('pane-editor');
+  const pp = document.getElementById('pane-preview');
+  if (mode==='split')   { ep.style.display='flex'; pp.style.display='flex'; ep.style.width='50%'; pp.style.width='50%'; }
+  if (mode==='editor')  { ep.style.display='flex'; pp.style.display='none'; ep.style.width='100%'; }
+  if (mode==='preview') { ep.style.display='none'; pp.style.display='flex'; pp.style.width='100%'; }
+}
+
+/* ── Parse markdown paper ── */
+function parsePaper(md) {
+  const lines = md.split('\n');
+  const meta = {};
+  answerKey = {};
+  
+  // Frontmatter
+  let inFm = false, fmDone = false;
+  const body = [];
+  for (const l of lines) {
+    if (l.trim()==='---' && !fmDone) { if (!inFm) { inFm=true; continue; } else { inFm=false; fmDone=true; continue; } }
+    if (inFm) { const [k,...v]=l.split(':'); if(k) meta[k.trim()]=v.join(':').trim(); continue; }
+    body.push(l);
+  }
+
+  // Extract answer lines and question types
+  const cleaned = [];
+  let qNum = 0;
+  const questionMeta = {}; // id -> {type, marks}
+
+  for (let i=0; i<body.length; i++) {
+    const l = body[i];
+    // Detect question line: **S1** [mcq:2]
+    const qMatch = l.match(/\*\*(S\d+)\*\*\s*\[(\w+):?(\d+)?\]/);
+    if (qMatch) {
+      qNum++;
+      const id = qMatch[1];
+      const type = qMatch[2];
+      const marks = parseInt(qMatch[3]||1);
+      questionMeta[id] = { type, marks };
+      cleaned.push(l.replace(/\[(\w+):?(\d+)?\]/,'').trim());
+      continue;
+    }
+    // Detect answer line
+    const ansMatch = l.match(/^\*\*JAWAPAN\*\*:\s*(.+)/);
+    if (ansMatch) {
+      const id = 'S' + qNum;
+      answerKey[id] = ansMatch[1].trim();
+      continue; // don't push to cleaned
+    }
+    cleaned.push(l);
+  }
+
+  return { meta, body: cleaned.join('\n'), questionMeta };
+}
+
+/* ── Render paper ── */
+async function renderPaper() {
+  const md = document.getElementById('md-editor').value;
+  userAnswers = {};
+  submitted = false;
+  questionCount = 0;
+
+  const { meta, body, questionMeta } = parsePaper(md);
+
+  // Split by --- sections (questions)
+  const sections = body.split(/\n---\n/);
+
+  let html = '';
+
+  // Paper header
+  html += `<div class="paper-header">
+    <div class="paper-title">${meta.title || 'Kertas Soalan'}</div>
+    <div class="paper-meta">
+      <span>📚 ${meta.subject||'—'}</span>
+      <span>🏫 Tahun ${meta.year||'—'}</span>
+      <span>⏱ ${meta.duration||30} minit</span>
+      <span>✎ ${meta.total_marks||'—'} markah</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-label"><span>Kemajuan</span><span id="prog-txt">0 / 0 dijawab</span></div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>`;
+
+  // Score panel (hidden until submit)
+  html += `<div class="score-panel" id="score-panel">
+    <div class="score-big" id="score-val">—</div>
+    <div class="score-label" id="score-sub">markah</div>
+    <div class="score-grade" id="score-grade"></div>
+  </div>`;
+
+  // Extract question blocks
+  let qIdx = 0;
+  const qBlocks = [];
+
+  for (const sec of sections) {
+    const qMatch = sec.match(/\*\*(S\d+)\*\*/);
+    if (!qMatch) continue;
+    const id = qMatch[1];
+    qIdx++;
+    questionCount++;
+
+    const type = (questionMeta[id]||{}).type || 'short';
+    const marks = (questionMeta[id]||{}).marks || 1;
+
+    qBlocks.push({ id, sec, type, marks });
+  }
+
+  for (const {id, sec, type, marks} of qBlocks) {
+    // Render markdown content (excluding MCQ options for custom render)
+    let qContent = sec.trim();
+
+    // Handle fill blanks
+    qContent = qContent.replace(/___BLANK___/g, `<input class="blank-input" data-qid="${id}" type="text" placeholder="____" oninput="recordFill('${id}',this)">`);
+
+    // Remove MCQ option lines for custom rendering
+    const optionLines = [];
+    const bodyLines = [];
+    for (const l of qContent.split('\n')) {
+      const optM = l.match(/^-\s*\[\s*\]\s*([A-D])\.\s*(.+)/);
+      if (optM) { optionLines.push({letter:optM[1], text:optM[2]}); }
+      else { bodyLines.push(l); }
+    }
+
+    let rendered = await renderMD(bodyLines.join('\n'));
+    
+    // MCQ options
+    let optHtml = '';
+    if (type==='mcq' && optionLines.length) {
+      optHtml = `<div class="options" id="opts-${id}">`;
+      for (const opt of optionLines) {
+        optHtml += `<label class="option" id="opt-${id}-${opt.letter}">
+          <input type="radio" name="q-${id}" value="${opt.letter}" onchange="recordMCQ('${id}','${opt.letter}')">
+          <span class="option-letter">${opt.letter}</span>
+          <span>${opt.text}</span>
+        </label>`;
+      }
+      optHtml += `</div>`;
+    }
+
+    // Essay / short answer input
+    let inputHtml = '';
+    if (type==='short') {
+      inputHtml = `<input class="short-input" id="input-${id}" type="text" placeholder="Tulis jawapan di sini..." oninput="recordShort('${id}',this.value)">`;
+    } else if (type==='essay') {
+      inputHtml = `<textarea class="essay-input" id="input-${id}" placeholder="Tulis jawapan panjang di sini..." oninput="recordShort('${id}',this.value)"></textarea>`;
+    }
+
+    html += `<div class="q-block" id="qblock-${id}">
+      <div class="q-num-row">
+        <span class="q-num">Soalan ${id}</span>
+        <span class="q-marks">${marks} markah</span>
+      </div>
+      <div class="q-body">
+        ${rendered}
+        ${optHtml}
+        ${inputHtml}
+        <div id="result-${id}"></div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('preview-area').innerHTML = html;
+  document.getElementById('prog-txt').textContent = `0 / ${questionCount} dijawab`;
+  document.getElementById('btn-submit').disabled = true;
+  document.getElementById('answered-count').textContent = `0 / ${questionCount} soalan dijawab`;
+
+  // Render mermaid
+  try { await mermaid.run({ nodes: document.querySelectorAll('.mermaid') }); } catch(e){}
+
+  ping('✓ Paper dirender');
+}
+
+async function renderMD(text) {
+  return marked.parse(text, { breaks: true });
+}
+
+/* ── Answer recording ── */
+function recordMCQ(id, val) {
+  if (submitted) return;
+  userAnswers[id] = val;
+  document.getElementById(`qblock-${id}`).classList.add('answered');
+  updateProgress();
+  beep(660, 0.06);
+}
+function recordShort(id, val) {
+  if (submitted) return;
+  userAnswers[id] = val;
+  const filled = val.trim().length > 0;
+  document.getElementById(`qblock-${id}`).classList.toggle('answered', filled);
+  updateProgress();
+}
+function recordFill(id, el) {
+  recordShort(id, el.value);
+}
+function updateProgress() {
+  const ans = Object.keys(userAnswers).filter(k=>userAnswers[k] && String(userAnswers[k]).trim()).length;
+  const pct = questionCount > 0 ? (ans/questionCount*100) : 0;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-txt').textContent = `${ans} / ${questionCount} dijawab`;
+  document.getElementById('answered-count').textContent = `${ans} / ${questionCount} soalan dijawab`;
+  document.getElementById('btn-submit').disabled = ans === 0;
+}
+
+/* ── Submit & score ── */
+function submitPaper() {
+  if (submitted) return;
+  submitted = true;
+  playSubmit();
+  ping('📋 Mengira markah...');
+
+  let earned = 0, total = 0, autoScored = 0;
+  const md = document.getElementById('md-editor').value;
+  const { questionMeta } = parsePaper(md);
+
+  setTimeout(()=>{
+    for (const [id, correct] of Object.entries(answerKey)) {
+      const meta = questionMeta[id] || {};
+      const marks = meta.marks || 1;
+      const type = meta.type || 'short';
+      total += marks;
+
+      if (type === 'essay') {
+        const el = document.getElementById(`result-${id}`);
+        if (el) el.innerHTML = `<span class="result-badge badge-pending">⏳ Semakan guru</span>`;
+        continue;
+      }
+
+      const userRaw = (userAnswers[id]||'').toString().trim().toLowerCase();
+      const correctAlts = correct.split('|').map(s=>s.trim().toLowerCase());
+      const isCorrect = correctAlts.includes(userRaw) || correctAlts.includes((userAnswers[id]||'').toString().trim().toUpperCase());
+
+      const block = document.getElementById(`qblock-${id}`);
+      const resultEl = document.getElementById(`result-${id}`);
+
+      if (isCorrect) {
+        earned += marks;
+        autoScored++;
+        if (block) { block.classList.remove('answered'); block.classList.add('correct'); }
+        if (resultEl) resultEl.innerHTML = `<span class="result-badge badge-correct">✓ Betul (+${marks} markah)</span>`;
+        if (type==='mcq') highlightMCQ(id, userAnswers[id], userAnswers[id]);
+      } else {
+        if (block) { block.classList.remove('answered'); block.classList.add('wrong'); }
+        const showCorrect = correctAlts[0];
+        if (resultEl) resultEl.innerHTML = `<span class="result-badge badge-wrong">✗ Salah</span><div class="correct-hint">Jawapan: ${correctAlts[0]}</div>`;
+        if (type==='mcq') highlightMCQ(id, userAnswers[id], correct.trim());
+      }
+    }
+
+    // Show score
+    const pct = total > 0 ? Math.round(earned/total*100) : 0;
+    const grade = pct>=90?'A+':pct>=80?'A':pct>=70?'B':pct>=60?'C':pct>=50?'D':'E';
+    const gradeColor = pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+    const gradeLabel = pct>=70?'Lulus':'Gagal';
+    document.getElementById('score-val').textContent = `${earned}/${total}`;
+    document.getElementById('score-sub').textContent = `markah — ${pct}%`;
+    document.getElementById('score-grade').textContent = `Gred ${grade} — ${gradeLabel}`;
+    document.getElementById('score-grade').style.background = pct>=70?'var(--green-soft)':pct>=50?'var(--amber-soft)':'var(--red-soft)';
+    document.getElementById('score-grade').style.color = gradeColor;
+    document.getElementById('score-panel').classList.add('show');
+    document.getElementById('score-panel').scrollIntoView({behavior:'smooth'});
+
+    document.getElementById('btn-submit').disabled = true;
+
+    if (pct>=70) playCorrect(); else playWrong();
+    ping(pct>=70?'🎉 Tahniah!':'📖 Cuba lagi!');
+  }, 300);
+}
+
+function highlightMCQ(id, selected, correct) {
+  const opts = document.querySelectorAll(`#opts-${id} .option`);
+  opts.forEach(opt => {
+    const val = opt.querySelector('input').value;
+    if (val===correct.trim()) opt.classList.add('correct-ans');
+    else if (val===selected && val!==correct.trim()) opt.classList.add('wrong-ans');
+    opt.querySelector('input').disabled = true;
+  });
+}
+
+/* ── Reset ── */
+function resetPaper() {
+  renderPaper();
+}
+
+/* ── Auto render on load ── */
+window.addEventListener('load', () => renderPaper());
+</script>
+</body>
+</html>
