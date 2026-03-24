@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Latih — Pelajar</title>
+  <meta name="description" content="Latih — aplikasi latihan pelajar sekolah rendah Malaysia.">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/latih.css">
+  <style>
+    /* ── App layout ─────────────────────────────────────── */
+    .student-app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    /* ── Top bar ─────────────────────────────────────────── */
+    .app-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    .app-topbar-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--text);
+      flex: 1;
+    }
+    .app-topbar-logo span { color: var(--accent); }
+    .app-user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .logout-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      color: var(--text3);
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background var(--transition), color var(--transition);
+      min-width: 40px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logout-btn:hover { background: var(--surface2); color: var(--red); }
+
+    /* ── Scrollable content area ─────────────────────────── */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 16px 80px; /* 80px = bottom nav height + gap */
+    }
+
+    /* ── Section panels ──────────────────────────────────── */
+    .app-section { display: none; animation: fadeIn 0.15s ease; }
+    .app-section.active { display: block; }
+
+    /* ── Bottom nav ──────────────────────────────────────── */
+    .app-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      z-index: 100;
+    }
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      color: var(--text3);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 6px 2px;
+      transition: color var(--transition), background var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      min-height: 44px;
+      border: none;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .nav-tab:hover    { background: var(--surface2); }
+    .nav-tab.active   { color: var(--accent); }
+    .nav-tab .nav-ico { font-size: 20px; line-height: 1; }
+
+    /* Active tab bottom indicator */
+    .nav-tab.active::after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: 0;
+      width: 24px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+    }
+    .nav-tab { position: relative; }
+
+    /* ── Section headings ────────────────────────────────── */
+    .section-head {
+      margin-bottom: 16px;
+    }
+    .section-head h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .section-head p {
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    /* ── Placeholder cards ───────────────────────────────── */
+    .placeholder-card {
+      background: var(--surface);
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--text3);
+    }
+    .placeholder-card .ph-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .placeholder-card p { font-size: 13px; }
+
+    /* ── Profile section ─────────────────────────────────── */
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .profile-info h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+    .profile-info p {
+      font-size: 13px;
+      color: var(--text2);
+    }
+
+    /* Stats row */
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .profile-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .profile-stat-val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .profile-stat-lbl {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    /* Grade history list */
+    .grade-list-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .grade-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      border: 2px solid currentColor;
+    }
+    .grade-info { flex: 1; min-width: 0; }
+    .grade-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .grade-meta  { font-size: 11px; color: var(--text3); margin-top: 2px; }
+    .grade-score { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<div class="student-app">
+
+  <!-- ── Top bar ─────────────────────────────────────────── -->
+  <header class="app-topbar">
+    <div class="app-topbar-logo">Latih<span>.</span></div>
+    <div class="app-user-info">
+      <div class="avatar avatar-sm" id="topbarAvatar" style="background:var(--accent);">–</div>
+      <span id="topbarName">Pelajar</span>
+    </div>
+    <button class="logout-btn" onclick="confirmLogout()" title="Log keluar" aria-label="Log keluar">
+      ↩
+    </button>
+  </header>
+
+  <!-- ── Scrollable content ─────────────────────────────── -->
+  <main class="app-content">
+
+    <!-- LATIHAN ──────────────────────────────────────────── -->
+    <section class="app-section active" id="sec-latihan">
+      <div id="paperEngineMount">
+        <!-- Phase 5 (paper-engine.js) mounts here -->
+        <div class="section-head">
+          <h2>Latihan</h2>
+          <p>Pilih kertas untuk mula belajar.</p>
+        </div>
+        <div class="placeholder-card">
+          <div class="ph-icon">📚</div>
+          <p>Senarai kertas akan dipaparkan di sini (Fasa 5).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAPAN ────────────────────────────────────────────── -->
+    <section class="app-section" id="sec-papan">
+      <div id="leaderboardMount">
+        <!-- Phase 6 (leaderboard.js) mounts here -->
+        <div class="section-head">
+          <h2>Papan Markah</h2>
+          <p>Senarai pelajar terbaik.</p>
+        </div>
+        <div class="placeholder-card">
+          <div class="ph-icon">🏆</div>
+          <p>Papan markah akan dipaparkan di sini (Fasa 6).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TUGASAN ──────────────────────────────────────────── -->
+    <section class="app-section" id="sec-tugasan">
+      <div id="kanbanMount">
+        <!-- Phase 8 (kanban.js) mounts here -->
+        <div class="section-head">
+          <h2>Tugasan</h2>
+          <p>Urus tugasan anda dengan papan Kanban.</p>
+        </div>
+        <div class="placeholder-card">
+          <div class="ph-icon">📋</div>
+          <p>Papan Kanban akan dipaparkan di sini (Fasa 8).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERINGATAN ────────────────────────────────────────── -->
+    <section class="app-section" id="sec-peringatan">
+      <div id="remindersMount">
+        <!-- Phase 8 (reminders.js) mounts here -->
+        <div class="section-head">
+          <h2>Peringatan</h2>
+          <p>Tetapkan peringatan untuk belajar.</p>
+        </div>
+        <div class="placeholder-card">
+          <div class="ph-icon">🔔</div>
+          <p>Peringatan akan dipaparkan di sini (Fasa 8).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFIL ───────────────────────────────────────────── -->
+    <section class="app-section" id="sec-profil">
+      <div class="section-head">
+        <h2>Profil Saya</h2>
+      </div>
+
+      <!-- Profile card -->
+      <div class="profile-card">
+        <div class="avatar avatar-xl" id="profileAvatar" style="background:var(--accent);">–</div>
+        <div class="profile-info">
+          <h3 id="profileName">–</h3>
+          <p id="profileSchool" style="margin-bottom:4px;">–</p>
+          <p><span class="badge-latih badge-accent" id="profileYear">–</span></p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="profile-stats" id="profileStats">
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="statPapers">0</div>
+          <div class="profile-stat-lbl">Kertas Dibuat</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="statAvg">—</div>
+          <div class="profile-stat-lbl">Purata %</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val" id="statBest" style="font-size:0.9rem;">—</div>
+          <div class="profile-stat-lbl">Terbaik</div>
+        </div>
+      </div>
+
+      <!-- Grade history -->
+      <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+        <div class="section-title">Rekod Gred Terkini</div>
+        <span id="gradesPhaseNote" style="font-size:11px;color:var(--text3);"></span>
+      </div>
+      <div id="gradeHistoryList"></div>
+
+      <!-- Phase 7 grade chart mount -->
+      <div id="gradesMount" style="margin-top:16px;"></div>
+    </section>
+
+  </main><!-- /app-content -->
+
+  <!-- ── Bottom navigation ──────────────────────────────── -->
+  <nav class="app-bottom-nav" role="navigation" aria-label="Navigasi utama">
+    <button class="nav-tab active" id="tab-latihan" onclick="switchTab('latihan')" aria-label="Latihan">
+      <span class="nav-ico">📚</span>
+      <span>Latihan</span>
+    </button>
+    <button class="nav-tab" id="tab-papan" onclick="switchTab('papan')" aria-label="Papan Markah">
+      <span class="nav-ico">🏆</span>
+      <span>Papan</span>
+    </button>
+    <button class="nav-tab" id="tab-tugasan" onclick="switchTab('tugasan')" aria-label="Tugasan">
+      <span class="nav-ico">📋</span>
+      <span>Tugasan</span>
+    </button>
+    <button class="nav-tab" id="tab-peringatan" onclick="switchTab('peringatan')" aria-label="Peringatan">
+      <span class="nav-ico">🔔</span>
+      <span>Peringatan</span>
+    </button>
+    <button class="nav-tab" id="tab-profil" onclick="switchTab('profil')" aria-label="Profil">
+      <span class="nav-ico">👤</span>
+      <span>Profil</span>
+    </button>
+  </nav>
+
+</div><!-- /student-app -->
+
+<!-- ── Confirm logout modal ───────────────────────────── -->
+<div class="modal-overlay" id="logoutModal" onclick="handleModalBackdrop(event)">
+  <div class="modal-box">
+    <h2 class="modal-title">Log Keluar?</h2>
+    <p class="modal-subtitle">Adakah anda pasti untuk log keluar?</p>
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button class="btn-latih btn-danger" style="flex:1;" onclick="doLogout()">Log Keluar</button>
+      <button class="btn-latih btn-ghost" onclick="closeModal('logoutModal')">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scripts ─────────────────────────────────────────── -->
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/marked.min.js"></script>
+<script src="assets/js/mermaid.min.js"></script>
+<script src="assets/js/chart.min.js"></script>
+<script src="assets/js/latih.js"></script>
+<script src="modules/auth.js"></script>
+<script src="modules/paper-engine.js"></script>
+<script src="modules/leaderboard.js"></script>
+<script src="modules/grade-chart.js"></script>
+
+<script>
+  /* ── Role guard ─────────────────────────────────────── */
+  Store.requireRole('student');
+
+  /* ── Current user ─────────────────────────────────── */
+  const _uid   = Store.currentUser();
+  const _users = Store.get('users') || {};
+  const _me    = _users[_uid] || {};
+
+  /* ══════════════════════════════════════════════════════
+     TAB NAVIGATION
+  ══════════════════════════════════════════════════════ */
+  const TABS = ['latihan','papan','tugasan','peringatan','profil'];
+  let _activeTab = 'latihan';
+
+  function switchTab(name) {
+    if (name === _activeTab) return;
+    Sound.tap();
+    _activeTab = name;
+
+    TABS.forEach(t => {
+      document.getElementById('sec-' + t).classList.toggle('active', t === name);
+      document.getElementById('tab-' + t).classList.toggle('active', t === name);
+    });
+
+    // Lazy-init section modules (Phase 5, 6, 7, 8 will plug in here)
+    if (name === 'profil')     renderProfil();
+    if (name === 'papan'       && typeof Leaderboard !== 'undefined') Leaderboard.init('leaderboardMount');
+    if (name === 'tugasan'     && typeof Kanban      !== 'undefined') Kanban.init('kanbanMount');
+    if (name === 'peringatan'  && typeof Reminders   !== 'undefined') Reminders.init('remindersMount');
+    if (name === 'latihan'     && typeof PaperEngine !== 'undefined') PaperEngine.init('paperEngineMount');
+
+    // Scroll back to top on tab change
+    document.querySelector('.app-content').scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TOP BAR
+  ══════════════════════════════════════════════════════ */
+  function initTopbar() {
+    if (!_me.name) return;
+    document.getElementById('topbarName').textContent   = _me.name.split(' ')[0]; // first name only
+    document.getElementById('topbarAvatar').textContent = getInitials(_me.name);
+    document.getElementById('topbarAvatar').style.background = _me.avatar_color || 'var(--accent)';
+  }
+
+  /* ══════════════════════════════════════════════════════
+     PROFIL SECTION
+  ══════════════════════════════════════════════════════ */
+  function renderProfil() {
+    // Avatar + identity
+    document.getElementById('profileName').textContent   = _me.name   || '—';
+    document.getElementById('profileSchool').textContent = _me.school  || '—';
+    document.getElementById('profileYear').textContent   = _me.year ? 'Tahun ' + _me.year : '—';
+    document.getElementById('profileAvatar').textContent = _me.name ? getInitials(_me.name) : '?';
+    document.getElementById('profileAvatar').style.background = _me.avatar_color || 'var(--accent)';
+
+    // Grade stats
+    const grades = Store.get('grades_' + _uid) || [];
+    document.getElementById('statPapers').textContent = grades.length;
+
+    if (grades.length) {
+      const avg = Math.round(grades.reduce((s, g) => s + g.pct, 0) / grades.length);
+      document.getElementById('statAvg').textContent = avg + '%';
+
+      // Best subject
+      const subMap = {};
+      grades.forEach(g => {
+        subMap[g.subject] = subMap[g.subject] || [];
+        subMap[g.subject].push(g.pct);
+      });
+      const best = Object.entries(subMap)
+        .map(([s, ps]) => ({ s, avg: ps.reduce((a, b) => a + b, 0) / ps.length }))
+        .sort((a, b) => b.avg - a.avg)[0];
+      document.getElementById('statBest').textContent = best ? best.s : '—';
+    } else {
+      document.getElementById('statAvg').textContent  = '—';
+      document.getElementById('statBest').textContent = '—';
+    }
+
+    // Grade history list (last 10)
+    const list = document.getElementById('gradeHistoryList');
+    list.innerHTML = '';
+    if (!grades.length) {
+      list.innerHTML = `<div style="text-align:center;color:var(--text3);padding:24px 0;font-size:13px;">
+        Belum ada rekod gred. Mula buat latihan! 🎯</div>`;
+      return;
+    }
+
+    const papers   = Store.get('papers') || {};
+    const recent   = [...grades].reverse().slice(0, 10);
+    recent.forEach(g => {
+      const gInfo  = getGrade(g.pct);
+      const paper  = papers[g.paper_id];
+      const title  = paper?.title || g.paper_id || 'Kertas';
+      const date   = g.date ? g.date.slice(0, 10) : '—';
+      const item   = document.createElement('div');
+      item.className = 'grade-list-item';
+      item.innerHTML = `
+        <div class="grade-circle" style="color:${gInfo.color};">${gInfo.grade}</div>
+        <div class="grade-info">
+          <div class="grade-title">${escHtml(title)}</div>
+          <div class="grade-meta">${escHtml(g.subject || '—')} · ${date}</div>
+        </div>
+        <div class="grade-score" style="color:${gInfo.color};">${g.score}/${g.max}</div>`;
+      list.appendChild(item);
+    });
+
+    // Phase 7: grade chart will mount into #gradesMount
+    document.getElementById('gradesPhaseNote').textContent = grades.length > 0 ? `${grades.length} rekod` : '';
+    if (typeof GradeChart !== 'undefined') GradeChart.init('gradesMount', _uid);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     LOGOUT
+  ══════════════════════════════════════════════════════ */
+  function confirmLogout() {
+    Sound.tap();
+    openModal('logoutModal');
+  }
+  function doLogout() {
+    Store.del('session');
+    location.href = 'index.html';
+  }
+
+  /* ══════════════════════════════════════════════════════
+     MODAL HELPERS
+  ══════════════════════════════════════════════════════ */
+  function openModal(id)  { document.getElementById(id).classList.add('visible'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
+  function handleModalBackdrop(e) { if (e.target === e.currentTarget) closeModal(e.currentTarget.id); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal('logoutModal');
+  });
+
+  /* ══════════════════════════════════════════════════════
+     INIT
+  ══════════════════════════════════════════════════════ */
+  (function init() {
+    initTopbar();
+    // Phase 5: PaperEngine will be initialised here when available
+    if (typeof PaperEngine !== 'undefined') PaperEngine.init('paperEngineMount');
+  })();
+</script>
+</body>
+</html>

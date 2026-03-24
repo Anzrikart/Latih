@@ -61,7 +61,8 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow: hidden;
+      overflow-x: auto; /* horizontal scroll on narrow screens */
+      -webkit-overflow-scrolling: touch;
     }
 
     /* Filter row */
@@ -117,6 +118,44 @@
     tr.grade-C  td:last-child { color: var(--amber); font-weight: 600; }
     tr.grade-D  td:last-child { color: var(--amber); font-weight: 600; }
     tr.grade-E  td:last-child { color: var(--red);   font-weight: 600; }
+
+    /* Action buttons in table cell */
+    .row-actions {
+      display: flex;
+      gap: 5px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      min-width: 160px;
+    }
+
+    /* Topbar: hide text logout on mobile (sidebar has one) */
+    @media (max-width: 767px) {
+      .topbar-logout-text { display: none; }
+      .topbar-logout-icon { display: flex; }
+
+      /* Filter row: stack selects full-width */
+      .filter-row { flex-direction: column; align-items: stretch; }
+      .filter-row select,
+      .filter-row .form-control-latih {
+        width: 100% !important;
+        min-width: unset !important;
+      }
+      .filter-row label { display: none; }
+
+      /* Settings and danger cards: fill width */
+      .settings-card,
+      .danger-zone { max-width: 100%; }
+
+      /* Table: min-width so it scrolls rather than wraps badly */
+      #studentTable  { min-width: 560px; }
+      #laporanTable  { min-width: 640px; }
+
+      /* Page content padding tighter on mobile */
+      .page-content { padding: 14px; }
+
+      /* Stat cards: 2 columns on mobile */
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
@@ -168,8 +207,10 @@
       <button class="hamburger-btn" onclick="openSidebar()" aria-label="Buka menu">
         ☰
       </button>
-      <div style="font-weight:600;font-size:14px;color:var(--text2);" id="topbarTitle">Soalan</div>
-      <button class="btn-latih btn-ghost btn-sm" onclick="confirmLogout()">Log Keluar</button>
+      <div style="font-weight:600;font-size:14px;color:var(--text2);flex:1;" id="topbarTitle">Soalan</div>
+      <button class="btn-latih btn-ghost btn-sm topbar-logout-text" onclick="confirmLogout()">Log Keluar</button>
+      <button class="btn-icon topbar-logout-icon" onclick="confirmLogout()" aria-label="Log Keluar" style="display:none;">↩</button>
+
     </header>
 
     <!-- Page content -->
@@ -372,8 +413,10 @@
 <!-- ══════════════════════════════════════════════════════
      SCRIPTS
 ══════════════════════════════════════════════════════ -->
+<script src="assets/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/marked.min.js"></script>
 <script src="assets/js/mermaid.min.js"></script>
+<script src="assets/js/chart.min.js"></script>
 <script src="assets/js/latih.js"></script>
 <script src="modules/auth.js"></script>
 <script src="modules/paper-editor.js"></script>
