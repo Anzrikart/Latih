@@ -23,71 +23,84 @@ The developer (Haru) is **not a programmer**. Every file you produce must be sel
 | Tagline | *Latih — to practise, to train, to drill.* |
 | Purpose | Free offline homework practice app for Malaysian primary school children (Year 1–6) |
 | Curriculum | KSSR / PKSR format (Malaysian national primary curriculum) |
-| Target users | Children aged 7–12, parents, primary school teachers |
+| Target users | Children aged 7–12 (students), teachers and parents (admins) |
 | Language | Bahasa Malaysia primary, English secondary |
 | Hosting | GitHub Pages (static only — no server, no backend) |
 | Code generator | Antigravity (Claude) — Haru does not write code manually |
 
 ---
 
-## Tech Stack
+## Role Architecture
 
-| Layer | Tool | Notes |
-|---|---|---|
-| UI | Bootstrap 5 | Load from local `/assets/css/bootstrap.min.css` |
-| Markdown | marked.js | Load from local `/assets/js/marked.min.js` |
-| Diagrams | Mermaid.js | Load from local `/assets/js/mermaid.min.js` |
-| Charts | Chart.js | Load from local `/assets/js/chart.min.js` |
-| Offline | Service Worker + Cache API | Native browser API |
-| Sound | Web Audio API | Native — no library |
-| Storage | `localStorage` + static JSON | Zero backend |
-| Icons | Bootstrap Icons (CDN or local) | Inline SVG preferred |
+Latih has **two roles**. Every feature belongs to exactly one role.
 
-**Hard rules:**
-- No Node.js. No npm. No build tools. No bundlers.
-- No external API calls. No backend. No database server.
-- All JS libraries must be loadable from the local `/assets/js/` folder.
-- Every file must work by opening it directly in a browser or via GitHub Pages.
+### Admin
+- Accessed via `admin.html`
+- Protected by a 4-digit PIN (stored hashed in localStorage)
+- Only one admin account per device
+- Desktop-optimised layout
+- **Exclusive capabilities:**
+  - Markdown editor — write, preview, and save question papers
+  - Manage paper list — publish, unpublish, delete papers
+  - View all student grade records
+  - Add and remove student profiles
+  - Reset a student's grade history
+  - Set and change the admin PIN
+
+### Student
+- Accessed via `app.html`
+- Selects a profile from the login screen (no password)
+- Mobile-first layout — designed for a child on a phone or tablet
+- **Exclusive capabilities:**
+  - Personal dashboard
+  - Browse papers by subject and year group
+  - Answer a paper and receive instant scored feedback
+  - View own grade history with chart
+  - View class leaderboard
+  - Personal Kanban board, reminders, memo pad
+
+### Shared data
+Both roles read from the same localStorage. Admin writes papers and user records. Students write grade results and personal data.
 
 ---
 
 ## File Structure
 
-Every file you create must go in the correct location. Never deviate from this structure.
-
 ```
 latih/
-├── index.html                  ← Login / user select screen
-├── app.html                    ← Main app shell (loaded post-login)
-├── sw.js                       ← Service Worker
+├── index.html                  ← Login screen — role selector (Admin / Student)
+├── admin.html                  ← Admin panel (PIN-protected)
+├── app.html                    ← Student app shell
+├── sw.js                       ← Service Worker (offline)
 ├── manifest.json               ← PWA manifest
-├── README.md                   ← Project documentation
+├── README.md
 ├── ANTIGRAVITY.md              ← This file
 │
 ├── assets/
 │   ├── css/
 │   │   ├── bootstrap.min.css
-│   │   └── latih.css           ← All custom styles
+│   │   └── latih.css           ← All custom styles (shared)
 │   ├── js/
 │   │   ├── bootstrap.bundle.min.js
 │   │   ├── marked.min.js
 │   │   ├── mermaid.min.js
 │   │   ├── chart.min.js
-│   │   └── latih.js            ← Main app logic
+│   │   └── latih.js            ← Shared utilities (Store, Sound, toast, getGrade)
 │   └── sounds/
-│       └── (optional .mp3 files)
 │
 ├── modules/
-│   ├── auth.js                 ← Multi-user session
-│   ├── paper-engine.js         ← Paper render + scoring
-│   ├── profile.js              ← Profile, timetable
-│   ├── grades.js               ← Grade history + charts
+│   ├── auth.js                 ← Session management, role checks
+│   ├── paper-engine.js         ← Render + answer capture + scoring (student)
+│   ├── paper-editor.js         ← Markdown editor + paper save/publish (admin only)
+│   ├── profile.js              ← Student profile, timetable
+│   ├── grades.js               ← Grade history + Chart.js
+│   ├── leaderboard.js          ← Class leaderboard
 │   ├── kanban.js               ← Kanban board
 │   ├── reminders.js            ← Reminders
-│   └── memo.js                 ← Memo / notes
+│   └── memo.js                 ← Memo pad
 │
 ├── data/
-│   └── users.json              ← Empty seed (app populates via localStorage)
+│   └── seed.json               ← Empty seed file
 │
 └── papers/
     ├── _template/
@@ -99,27 +112,47 @@ latih/
 
 ---
 
+## Tech Stack
+
+| Layer | Tool | Notes |
+|---|---|---|
+| UI | Bootstrap 5 | Load from `/assets/css/bootstrap.min.css` |
+| Markdown | marked.js | Load from `/assets/js/marked.min.js` |
+| Diagrams | Mermaid.js | Load from `/assets/js/mermaid.min.js` |
+| Charts | Chart.js | Load from `/assets/js/chart.min.js` |
+| Offline | Service Worker + Cache API | Native browser API |
+| Sound | Web Audio API | Native — no library |
+| Storage | `localStorage` + static JSON | Zero backend |
+
+**Hard rules:**
+- No Node.js. No npm. No build tools. No bundlers.
+- No external API calls. No backend. No database server.
+- All JS libraries load from `/assets/js/` — never CDN links in production files.
+- Every file must work by opening directly in a browser or via GitHub Pages.
+
+---
+
 ## Design System
 
-Antigravity must apply this design system to every screen it builds. Do not deviate.
+Apply to every screen without exception.
 
 ### Palette
 
 ```css
---bg:           #F7F5F0;   /* page background */
---surface:      #FFFFFF;   /* cards, panels */
---surface2:     #F0EDE6;   /* secondary surfaces, hover states */
---border:       #DDD9D0;   /* all borders */
---text:         #1A1814;   /* primary text */
---text2:        #6B6760;   /* secondary text */
---text3:        #9B978F;   /* placeholder, muted labels */
---accent:       #2B5CE6;   /* primary action colour */
---accent-soft:  #EBF0FD;   /* accent backgrounds, selected states */
---green:        #1A7A4A;   /* correct / success */
+--bg:           #F7F5F0;
+--surface:      #FFFFFF;
+--surface2:     #F0EDE6;
+--border:       #DDD9D0;
+--text:         #1A1814;
+--text2:        #6B6760;
+--text3:        #9B978F;
+--accent:       #2B5CE6;
+--accent-soft:  #EBF0FD;
+--green:        #1A7A4A;
 --green-soft:   #E6F5EE;
---red:          #C0392B;   /* wrong / error */
+--red:          #C0392B;
 --red-soft:     #FDEEEC;
---amber:        #B45309;   /* warning / pending */
+--amber:        #B45309;
 --amber-soft:   #FEF3C7;
 --radius:       10px;
 --shadow:       0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
@@ -127,216 +160,251 @@ Antigravity must apply this design system to every screen it builds. Do not devi
 
 ### Typography
 
-```css
-font-family: 'DM Sans', sans-serif;      /* body */
-font-family: 'DM Serif Display', serif;  /* headings, logo */
-font-family: 'JetBrains Mono', monospace; /* code editor only */
-```
-
-Load from Google Fonts:
 ```html
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 ```
 
+```css
+font-family: 'DM Sans', sans-serif;       /* body, UI */
+font-family: 'DM Serif Display', serif;   /* headings, logo */
+font-family: 'JetBrains Mono', monospace; /* markdown editor only */
+```
+
 ### Rules
 - Clean, minimal. No gradients. No heavy shadows.
-- Bootstrap used for grid and utilities only — all component styles are custom.
-- Every interactive element has a hover and active state.
-- Sound feedback on every meaningful user action (Web Audio API — see Sound section).
-- Mobile-first. Every screen must work at 375px width.
-- Bahasa Malaysia for all student-facing UI strings. English allowed in dev/admin UI.
+- Bootstrap for grid and utilities only — all component styles are custom.
+- Every interactive element has hover and active state.
+- Sound feedback on every meaningful user action.
+- **Student screens:** mobile-first, min 375px, large tap targets (min 44px height).
+- **Admin screens:** desktop-optimised, min 768px, denser layout acceptable.
+- Bahasa Malaysia for all student-facing strings.
 
 ---
 
 ## localStorage Schema
 
-All user data is stored in `localStorage`. Keys are prefixed with `latih_`.
+All keys prefixed `latih_`. Always use the Store helper.
 
 ```javascript
-// Active session
-localStorage.setItem('latih_session', JSON.stringify({ current_user: "user_001" }));
-
-// All users index
-localStorage.setItem('latih_users', JSON.stringify({
-  "user_001": {
-    "id": "user_001",
-    "name": "Ahmad Faris",
-    "school": "SK Taman Maju",
-    "year": 4,
-    "avatar_color": "#2B5CE6",
-    "created": "2026-03-24"
+'latih_session'             → { current_user: "user_001", role: "student" | "admin" }
+'latih_admin_pin'           → "hashed_pin_string"
+'latih_users'               → { "user_001": { id, name, school, year, avatar_color, created } }
+'latih_papers'              → {
+  "paper-id": {
+    id, title, subject, year, duration_minutes, total_marks,
+    difficulty, tags, published: true|false, created, author,
+    question_md: "...",
+    answers: [ { id, type, correct, marks } ]
   }
-}));
-
-// Grade history (per user)
-localStorage.setItem('latih_grades_user_001', JSON.stringify([
-  {
-    "paper_id": "matematik-tahun4-pecahan",
-    "date": "2026-03-24",
-    "score": 8,
-    "max": 10,
-    "pct": 80,
-    "grade": "A",
-    "time_taken_s": 720,
-    "answers": { "S1": "B", "S2": "15" }
-  }
-]));
-
-// Kanban (per user)
-localStorage.setItem('latih_kanban_user_001', JSON.stringify({
-  "todo":  [{ "id": "t1", "text": "Siapkan latihan BM", "due": "2026-03-25" }],
-  "doing": [],
-  "done":  []
-}));
-
-// Memos (per user)
-localStorage.setItem('latih_memos_user_001', JSON.stringify([
-  { "id": "m1", "text": "Exam Sains: 28 Mac", "pinned": true, "created": "2026-03-20" }
-]));
-
-// Reminders (per user)
-localStorage.setItem('latih_reminders_user_001', JSON.stringify([
-  { "id": "r1", "text": "Buat latihan Matematik", "time": "19:00", "days": ["Monday","Wednesday","Friday"] }
-]));
-
-// Timetable (per user)
-localStorage.setItem('latih_timetable_user_001', JSON.stringify({
-  "Monday":    ["BM", "Matematik", "Sains"],
-  "Tuesday":   ["BI", "Sejarah", "Matematik"],
-  "Wednesday": ["BM", "Pendidikan Islam", "Sains"],
-  "Thursday":  ["BI", "Matematik", "Sejarah"],
-  "Friday":    ["BM", "Sains", "Pendidikan Moral"]
-}));
+}
+'latih_grades_user_001'     → [ { paper_id, subject, date, score, max, pct, grade, time_taken_s, answers } ]
+'latih_leaderboard'         → [ { user_id, name, avatar_color, papers_done, avg_pct, best_subject } ]
+'latih_kanban_user_001'     → { todo, doing, done }
+'latih_memos_user_001'      → [ { id, text, pinned, created } ]
+'latih_reminders_user_001'  → [ { id, text, time, days } ]
+'latih_timetable_user_001'  → { Monday: [...], Tuesday: [...], ... }
 ```
 
-**Helper functions** — always include these in any file that touches localStorage:
+### Store helper — include in every file
 
 ```javascript
 const Store = {
-  get: (key) => { try { return JSON.parse(localStorage.getItem('latih_' + key)); } catch { return null; } },
-  set: (key, val) => localStorage.setItem('latih_' + key, JSON.stringify(val)),
-  del: (key) => localStorage.removeItem('latih_' + key),
-  currentUser: () => { const s = Store.get('session'); return s ? s.current_user : null; },
-  userKey: (key) => key + '_' + Store.currentUser()
+  get:         (key)      => { try { return JSON.parse(localStorage.getItem('latih_' + key)); } catch { return null; } },
+  set:         (key, val) => localStorage.setItem('latih_' + key, JSON.stringify(val)),
+  del:         (key)      => localStorage.removeItem('latih_' + key),
+  currentUser: ()         => Store.get('session')?.current_user ?? null,
+  currentRole: ()         => Store.get('session')?.role ?? null,
+  userKey:     (key)      => key + '_' + Store.currentUser(),
+  requireRole: (role)     => { if (Store.currentRole() !== role) location.href = 'index.html'; }
 };
 ```
 
 ---
 
+## Auth & PIN System
+
+### Admin PIN
+- On first run (no PIN stored): show PIN setup screen
+- PIN stored hashed: `btoa(pin + 'latih_salt_2026')`
+- Login: enter PIN → verify → set `{ role: 'admin' }` → redirect to `admin.html`
+- Admin is not a student profile — no user_id in admin session
+
+### Student login
+- Shows student profile cards — tap to log in
+- Sets `{ current_user: id, role: 'student' }` → redirect to `app.html`
+- No password for students
+
+### Role guard — first line of every page script
+
+```javascript
+Store.requireRole('admin');   // in admin.html
+Store.requireRole('student'); // in app.html
+```
+
+---
+
+## index.html — Login Screen
+
+Two sections on one page:
+
+**Top — Admin**
+- Compact card: "Masuk sebagai Pentadbir" button
+- Clicking shows PIN modal (4 digits)
+- If no PIN set: show "Tetapkan PIN Pentadbir" instead
+
+**Bottom — Pelajar**
+- Grid of student avatar cards (coloured circle + initials + name)
+- Tap card → login as that student
+- "Tambah Pelajar" button → inline form (name, school, year, avatar colour)
+- If no students: friendly onboarding message
+
+---
+
+## admin.html — Admin Panel
+
+Sidebar navigation. Desktop layout.
+
+### Sidebar sections
+
+| Label | Content |
+|---|---|
+| Soalan | Paper list + markdown editor |
+| Pelajar | Student management table |
+| Laporan | All students' grade overview |
+| Tetapan | PIN change, reset options |
+
+### Soalan section — two-panel layout
+
+**Left: Paper list**
+- Each row: title, subject, year, published badge
+- Buttons per row: Edit, Publish/Unpublish toggle, Delete
+- "Kertas Baru" button at top
+
+**Right: Markdown editor**
+- Toolbar: Bold, Italic, Code, Mermaid insert, Preview toggle
+- `<textarea>` in JetBrains Mono for question.md
+- Live preview panel (togglable) via marked.js + mermaid.js
+- Metadata fields: title, subject, year, duration, total marks, difficulty, tags
+- Answer key builder: table of rows (ID, type, correct, marks) — add/remove rows
+- Save button → `Store.set('papers', ...)` + `Sound.save()` + toast
+- Publish toggle → sets `published: true/false`
+
+### Pelajar section
+- Table: name, school, year, papers done, avg score
+- Add / Edit / Reset grades / Delete per student
+
+### Laporan section
+- Filter: by subject, year, student
+- Table: Student | Paper | Date | Score | Grade
+- Summary cards: total papers, class average, top scorer
+
+### Tetapan section
+- Change PIN form
+- "Padam semua data" — clears all localStorage (with confirm modal)
+
+---
+
+## app.html — Student App
+
+Mobile-first. Bottom navigation.
+
+### Bottom nav
+
+| Label | Section |
+|---|---|
+| Latihan | Paper browser + paper view |
+| Papan | Leaderboard |
+| Tugasan | Kanban |
+| Peringatan | Reminders |
+| Profil | Profile + grade history |
+
+### Latihan section
+- Filter chips: All subjects + individual subjects. Year: All + Tahun 1–6.
+- Paper cards: title, subject badge, year, duration, marks, difficulty
+- Only `published: true` papers shown
+- Tap → opens paper view (render, answer, submit, score)
+
+### Papan section (Leaderboard)
+- Top 10 by avg_pct. Current student row highlighted.
+- Rank (medal for top 3) | Name | Papers Done | Avg % | Best Subject
+
+### Profil section
+- Avatar, name, school, year
+- Grade history list + line chart (Chart.js, last 10 results)
+- Stats: total papers, average score, best subject
+
+---
+
 ## Paper Format
 
-Every question paper is three files in one folder under `/papers/`.
-
-### `question.md` syntax
+### question.md syntax
 
 ```markdown
 ---
-title: [Paper title in Bahasa Malaysia]
-subject: [Matematik | BM | BI | Sains | Sejarah | Pendidikan Islam | Pendidikan Moral]
-year: [1–6]
-duration: [minutes]
-total_marks: [number]
+title: Matematik Tahun 4 — Ujian Pecahan
+subject: Matematik
+year: 4
+duration: 30
+total_marks: 10
 ---
 
-## [Section heading]
+## Bahagian A: Pilihan Berganda
 
 **S1** [mcq:2]
-[Question text in Bahasa Malaysia]
+Soalan di sini...
 
-\`\`\`mermaid
-[optional diagram]
-\`\`\`
+- [ ] A. Pilihan satu
+- [ ] B. Pilihan dua
+- [ ] C. Pilihan tiga
+- [ ] D. Pilihan empat
 
-- [ ] A. [option]
-- [ ] B. [option]
-- [ ] C. [option]
-- [ ] D. [option]
-
-**JAWAPAN**: [A|B|C|D]
+**JAWAPAN**: B
 
 ---
 
 **S2** [fill:2]
-[Sentence with] ___BLANK___ [in it]
+Lengkapkan: 3/4 daripada 20 ialah ___BLANK___
 
-**JAWAPAN**: [correct text | alternative spelling]
+**JAWAPAN**: 15
 
 ---
 
 **S3** [short:2]
-[Question text]
+Soalan jawapan pendek...
 
-**JAWAPAN**: [answer | alternative]
+**JAWAPAN**: jawapan | alternatif
 
 ---
 
 **S4** [essay:5]
-[Essay prompt]
+Soalan esei...
 
-**JAWAPAN**: [model answer for teacher reference]
+**JAWAPAN**: (model answer for teacher reference)
 ```
 
 ### Question type codes
 
-| Code | Type | Scoring |
+| Code | Type | Auto-score |
 |---|---|---|
-| `mcq` | Multiple choice (A/B/C/D) | Auto — exact match |
-| `true_false` | True / False | Auto — exact match |
-| `fill` | Fill in the blank | Auto — normalised string match |
-| `short` | Short written answer | Auto — normalised string match |
-| `matching` | Matching pairs | Auto |
-| `essay` | Essay / long answer | Manual — flagged for teacher review |
-
-**Normalised match** means: trim whitespace, lowercase, strip trailing punctuation. Pipe `|` separates accepted alternatives.
-
-### `answers.json` structure
-
-```json
-{
-  "paper_id": "folder-name-here",
-  "questions": [
-    { "id": "S1", "type": "mcq",   "correct": "B",       "marks": 2 },
-    { "id": "S2", "type": "fill",  "correct": "15 | lima belas", "marks": 2 },
-    { "id": "S3", "type": "short", "correct": "8",        "marks": 2 },
-    { "id": "S4", "type": "essay", "correct": "",         "marks": 5, "auto_score": false }
-  ]
-}
-```
-
-### `rubric.json` structure
-
-```json
-{
-  "paper_id": "folder-name-here",
-  "title": "Full paper title",
-  "subject": "Matematik",
-  "year": 4,
-  "duration_minutes": 30,
-  "total_marks": 10,
-  "difficulty": "mudah | sederhana | sukar",
-  "tags": ["topic", "subtopic"],
-  "created": "YYYY-MM-DD",
-  "author": "Cikgu / Parent name"
-}
-```
+| `mcq` | Multiple choice A/B/C/D | Yes |
+| `true_false` | True / False | Yes |
+| `fill` | Fill in the blank | Yes — normalised |
+| `short` | Short written answer | Yes — normalised |
+| `matching` | Matching pairs | Yes |
+| `essay` | Essay / long answer | No — pending review |
 
 ---
 
 ## Scoring Logic
 
-Antigravity must implement scoring exactly as follows. Never deviate.
-
 ```javascript
 function scoreAnswer(userRaw, correctRaw, type) {
-  if (type === 'essay') return null; // pending teacher review
-
+  if (type === 'essay') return null;
   const normalise = s => String(s).trim().toLowerCase().replace(/[.,!?;:]+$/, '');
   const user = normalise(userRaw);
   const accepted = correctRaw.split('|').map(normalise);
-
   if (type === 'mcq' || type === 'true_false') {
-    return accepted.includes(String(userRaw).trim().toUpperCase()) ||
-           accepted.includes(user);
+    return accepted.includes(String(userRaw).trim().toUpperCase()) || accepted.includes(user);
   }
   return accepted.includes(user);
 }
@@ -348,20 +416,50 @@ function scoreAnswer(userRaw, correctRaw, type) {
 
 ```javascript
 function getGrade(pct) {
-  if (pct >= 90) return { grade: 'A+', label: 'Cemerlang',    color: 'var(--green)'  };
-  if (pct >= 80) return { grade: 'A',  label: 'Cemerlang',    color: 'var(--green)'  };
-  if (pct >= 70) return { grade: 'B',  label: 'Kepujian',     color: 'var(--green)'  };
-  if (pct >= 60) return { grade: 'C',  label: 'Lulus',        color: 'var(--amber)'  };
-  if (pct >= 50) return { grade: 'D',  label: 'Lulus',        color: 'var(--amber)'  };
-  return          { grade: 'E',  label: 'Perlu Usaha',  color: 'var(--red)'    };
+  if (pct >= 90) return { grade: 'A+', label: 'Cemerlang',   color: 'var(--green)'  };
+  if (pct >= 80) return { grade: 'A',  label: 'Cemerlang',   color: 'var(--green)'  };
+  if (pct >= 70) return { grade: 'B',  label: 'Kepujian',    color: 'var(--green)'  };
+  if (pct >= 60) return { grade: 'C',  label: 'Lulus',       color: 'var(--amber)'  };
+  if (pct >= 50) return { grade: 'D',  label: 'Lulus',       color: 'var(--amber)'  };
+  return          { grade: 'E',  label: 'Perlu Usaha', color: 'var(--red)'    };
 }
 ```
 
 ---
 
-## Sound System
+## Leaderboard Logic
 
-Every screen must include this sound module. Call the relevant function on user actions.
+Call after every paper submission:
+
+```javascript
+function updateLeaderboard() {
+  const users = Store.get('users') || {};
+  const board = [];
+  for (const [id, user] of Object.entries(users)) {
+    const grades = Store.get('grades_' + id) || [];
+    if (!grades.length) continue;
+    const avg = Math.round(grades.reduce((s, g) => s + g.pct, 0) / grades.length);
+    const subjectMap = {};
+    grades.forEach(g => {
+      subjectMap[g.subject] = subjectMap[g.subject] || [];
+      subjectMap[g.subject].push(g.pct);
+    });
+    const bestSubject = Object.entries(subjectMap)
+      .map(([s, ps]) => ({ s, avg: ps.reduce((a, b) => a + b, 0) / ps.length }))
+      .sort((a, b) => b.avg - a.avg)[0]?.s || '—';
+    board.push({ user_id: id, name: user.name, avatar_color: user.avatar_color,
+                 papers_done: grades.length, avg_pct: avg, best_subject: bestSubject });
+  }
+  board.sort((a, b) => b.avg_pct - a.avg_pct);
+  Store.set('leaderboard', board);
+}
+```
+
+---
+
+## Sound Module
+
+Include in every HTML file with user interaction.
 
 ```javascript
 const Sound = (() => {
@@ -381,98 +479,81 @@ const Sound = (() => {
     correct: () => { tone(880, 0.08); setTimeout(() => tone(1100, 0.10), 90); },
     wrong:   () => tone(220, 0.18, 'sawtooth', 0.08),
     submit:  () => [523, 659, 784].forEach((f, i) => setTimeout(() => tone(f, 0.12), i * 80)),
-    notify:  () => tone(740, 0.12, 'sine', 0.10)
+    notify:  () => tone(740, 0.12, 'sine', 0.10),
+    save:    () => { tone(440, 0.06); setTimeout(() => tone(550, 0.08), 70); }
   };
 })();
 ```
 
-| Event | Function |
+| Event | Sound |
 |---|---|
-| Button tap / option select | `Sound.tap()` |
-| Correct answer revealed | `Sound.correct()` |
-| Wrong answer revealed | `Sound.wrong()` |
+| Button tap | `Sound.tap()` |
+| Correct answer | `Sound.correct()` |
+| Wrong answer | `Sound.wrong()` |
 | Paper submitted | `Sound.submit()` |
-| Reminder / notification | `Sound.notify()` |
+| Admin save/publish | `Sound.save()` |
+| Reminder | `Sound.notify()` |
 
 ---
 
-## UI Patterns
-
-### Toast notification
+## Toast Notification
 
 ```javascript
 function toast(msg, type = 'info') {
-  const t = document.createElement('div');
   const colors = { info: '#2B5CE6', success: '#1A7A4A', error: '#C0392B', warning: '#B45309' };
+  const t = document.createElement('div');
   t.style.cssText = `position:fixed;bottom:20px;right:20px;background:${colors[type]};color:white;
     padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;
     opacity:0;transform:translateY(6px);transition:all 0.2s;pointer-events:none;`;
   t.textContent = msg;
   document.body.appendChild(t);
-  requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
-  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 200); }, 2000);
+  requestAnimationFrame(() => { t.style.opacity='1'; t.style.transform='translateY(0)'; });
+  setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 200); }, 2200);
 }
-```
-
-### Confirm dialog (replacing browser `confirm()`)
-
-Use a Bootstrap modal — never use `window.confirm()`.
-
-### Empty state
-
-When a list (grades, kanban, memos) is empty:
-
-```html
-<div style="text-align:center;padding:40px 20px;color:var(--text3);">
-  <div style="font-size:32px;margin-bottom:8px;">📭</div>
-  <div style="font-size:14px;">[Context-appropriate empty message in BM]</div>
-</div>
 ```
 
 ---
 
-## Build Order (Phases)
+## Build Order
 
-Build in this sequence. Do not skip phases. Each phase produces working, committable code.
-
-| Phase | Files to produce | Description |
+| Phase | Files | Description |
 |---|---|---|
-| **1** | `index.html`, `assets/css/latih.css` | Login screen — user select, create new user |
-| **2** | `app.html`, `modules/auth.js`, `assets/js/latih.js` | App shell — nav, routing between sections |
-| **3** | `modules/paper-engine.js` | Paper render + answer capture + scoring (already prototyped) |
-| **4** | `modules/profile.js` | Profile page — name, school, year, timetable |
-| **5** | `modules/grades.js` | Grade history list + Chart.js progress chart |
-| **6** | `modules/kanban.js` | Kanban board — drag or button-based column move |
-| **7** | `modules/reminders.js`, `modules/memo.js` | Reminders + memo pad |
-| **8** | `sw.js`, `manifest.json` | Service Worker + PWA manifest |
+| **1** | `index.html`, `assets/css/latih.css` | Login — role selector, student profiles, admin PIN |
+| **2** | `admin.html`, `modules/auth.js`, `assets/js/latih.js` | Admin shell + sidebar + PIN guard |
+| **3** | `modules/paper-editor.js` | Admin markdown editor + answer key builder + save/publish |
+| **4** | `app.html` | Student app shell + bottom nav + role guard |
+| **5** | `modules/paper-engine.js` | Student paper browser + render + scoring |
+| **6** | `modules/leaderboard.js` | Leaderboard (student + admin views) |
+| **7** | `modules/profile.js`, `modules/grades.js` | Profile + grade history + chart |
+| **8** | `modules/kanban.js`, `modules/reminders.js`, `modules/memo.js` | Student productivity tools |
+| **9** | `sw.js`, `manifest.json` | Offline + PWA |
 
 ---
 
 ## Command Reference
-
-Use these exact commands when talking to Antigravity. Copy and paste as-is.
-
----
 
 ### Start Phase 1
 
 ```
 Build Phase 1 of Project Latih.
 
-Produce two files:
-1. `index.html` — the login / user select screen
-2. `assets/css/latih.css` — the full custom stylesheet
+Produce:
+1. `index.html` — login / role selector screen
+2. `assets/css/latih.css` — full custom stylesheet
 
-Requirements for index.html:
-- Shows existing user profiles as avatar cards (avatar is a coloured circle with initials)
-- "Tambah Pengguna" button opens a form to create a new user (name, school, year 1–6, pick avatar colour)
-- Selecting a user sets localStorage latih_session and redirects to app.html
-- If no users exist, show onboarding: "Selamat datang ke Latih! Buat profil pertama anda."
-- Sound.tap() on every interaction
-- Fully responsive (375px minimum width)
-- Apply the full design system from ANTIGRAVITY.md
+Requirements:
+TOP SECTION (Admin): compact card with "Masuk sebagai Pentadbir" button.
+Clicking shows a 4-digit PIN modal. If no PIN stored: show "Tetapkan PIN" instead.
+Correct PIN → Store.set('session', { role: 'admin' }) → redirect to admin.html.
 
-Do not produce placeholder or skeleton code. Output complete, working files.
+BOTTOM SECTION (Pelajar): grid of student avatar cards (coloured circle + initials + name).
+Tapping a card → Store.set('session', { current_user: id, role: 'student' }) → redirect to app.html.
+"Tambah Pelajar" button → inline form: name, school, year 1-6, avatar colour picker.
+If no students exist: show onboarding message "Selamat datang ke Latih! Buat profil pertama anda."
+
+Include Store helper, Sound module, toast function.
+Apply full design system. Mobile-first, 375px minimum.
+Output complete working files. No placeholders.
 ```
 
 ---
@@ -483,19 +564,20 @@ Do not produce placeholder or skeleton code. Output complete, working files.
 Build Phase 2 of Project Latih.
 
 Produce:
-1. `app.html` — the main app shell
-2. `modules/auth.js` — session management
-3. `assets/js/latih.js` — app initialisation and section router
+1. `admin.html` — admin panel with sidebar navigation
+2. `modules/auth.js` — session management and role guards
+3. `assets/js/latih.js` — shared utilities: Store, Sound, toast, getGrade, scoreAnswer, updateLeaderboard
 
-Requirements:
-- app.html has a bottom navigation bar (mobile-first) with icons for:
-  Latihan (papers), Gred (grades), Tugasan (kanban), Peringatan (reminders), Profil
-- Active section is shown; others are hidden (display:none)
-- Top bar shows current user name + avatar + a logout button (returns to index.html)
-- auth.js exports: getCurrentUser(), getUser(id), saveUser(data), logout()
-- latih.js initialises the app, loads the current user, sets up nav routing
-- If no session exists, redirect to index.html immediately
-- Apply full design system. Mobile-first.
+Requirements for admin.html:
+- First line of script: Store.requireRole('admin')
+- Left sidebar: Soalan, Pelajar, Laporan, Tetapan nav items
+- Top bar: "Latih — Pentadbir" logo + logout button (clears session, returns to index.html)
+- Soalan: placeholder div "Editor kertas akan dipaparkan di sini" (Phase 3 replaces this)
+- Pelajar: table of all students from latih_users. Add / Edit / Delete buttons.
+- Laporan: table of all grade records across all latih_grades_* keys. Filter by subject.
+- Tetapan: change PIN form + "Padam semua data" button with confirm modal
+- Sidebar always visible at 768px+, collapsible hamburger on mobile
+- Apply full design system. Output complete files.
 ```
 
 ---
@@ -503,21 +585,116 @@ Requirements:
 ### Start Phase 3
 
 ```
-Build Phase 3 of Project Latih — the Paper Engine.
+Build Phase 3 of Project Latih — Admin Paper Editor.
+
+Produce: `modules/paper-editor.js`
+
+This module replaces the placeholder in admin.html's Soalan section.
+
+LEFT PANEL — Paper list:
+- Lists all papers from latih_papers: title, subject badge, year, published status toggle
+- "Kertas Baru" button creates blank paper and opens it in the editor
+- Edit / Delete buttons per paper row
+
+RIGHT PANEL — Markdown editor:
+- Toolbar: Bold (**text**), Italic (*text*), Code block, Insert Mermaid template, Toggle preview
+- Large textarea in JetBrains Mono for question.md content
+- Side-by-side or togglable live preview rendered by marked.js + mermaid.js
+- Below editor: title field, subject dropdown (BM/BI/Matematik/Sains/Sejarah/Pendidikan Islam/Pendidikan Moral),
+  year (1-6), duration (minutes), total marks, difficulty (mudah/sederhana/sukar), tags field
+- Answer key builder table:
+  Each row: Question ID | Type dropdown | Correct answer field | Marks field
+  "Tambah Soalan" adds a row. X button removes a row.
+- Save button: writes to latih_papers in localStorage. Sound.save(). toast('Kertas disimpan', 'success').
+- Publish toggle: sets published true/false. Unpublished papers hidden from students.
+
+JAWAPAN lines in question_md are stored and used internally but stripped before student render.
+Output complete file.
+```
+
+---
+
+### Start Phase 4
+
+```
+Build Phase 4 of Project Latih — Student App Shell.
+
+Produce: `app.html`
+
+Requirements:
+- First line of script: Store.requireRole('student')
+- Bottom nav: Latihan | Papan | Tugasan | Peringatan | Profil
+- Top bar: student avatar circle + name (from current session) + logout icon
+- Each nav section shown/hidden on tap. Active tab highlighted.
+- Latihan: placeholder "Senarai kertas akan dipaparkan di sini"
+- Papan: placeholder leaderboard table
+- Tugasan: placeholder Kanban
+- Peringatan: placeholder reminders
+- Profil: show name, school, year, avatar. Placeholder for grade history.
+- Mobile-first. All tap targets min 44px height. Smooth transitions between sections.
+- Apply full design system. Output complete file.
+```
+
+---
+
+### Start Phase 5
+
+```
+Build Phase 5 of Project Latih — Student Paper Engine.
 
 Produce: `modules/paper-engine.js`
 
-Requirements:
-- Fetches /papers/index.json (list of available papers with id, title, subject, year, difficulty)
-- Renders a paper browser in the Latihan section: filterable by subject and year
-- On paper select: fetches question.md and answers.json, renders the paper
-- Paper render: Markdown via marked.js, Mermaid diagrams, all question types (mcq, fill, short, essay)
-- Answer capture per question type
-- On submit: scores all auto-scored questions using the scoreAnswer() function from ANTIGRAVITY.md
-- Shows result: score, percentage, grade using getGrade() from ANTIGRAVITY.md
-- Saves result to localStorage using the grade schema from ANTIGRAVITY.md
-- Sound feedback: Sound.tap(), Sound.correct(), Sound.wrong(), Sound.submit()
-- Essay questions show "Menunggu semakan guru" badge — not scored
+Replaces Latihan placeholder in app.html.
+
+PAPER BROWSER:
+- Grid of paper cards from latih_papers (published: true only)
+- Filter chips: all subjects + individual. Year chips: All + Tahun 1-6.
+- Card: title, subject badge, year badge, duration, marks, difficulty pill
+- Empty state if no published papers: "Tiada kertas tersedia buat masa ini"
+
+PAPER VIEW (shown when a card is tapped):
+- Back button → browser
+- Header: title, subject, year, live countdown timer (duration_minutes × 60 seconds), total marks
+- Renders question_md: strip JAWAPAN lines before render. Parse via marked.js + mermaid.js.
+- Question types: mcq (labelled radio buttons), fill (inline ___BLANK___ → input), short (text input), essay (textarea)
+- Progress bar updates as answers filled
+- Submit button (disabled until ≥1 answer)
+
+ON SUBMIT:
+- Score all auto-scored questions using scoreAnswer()
+- Show correct/wrong per question. Sound.correct() / Sound.wrong() per question reveal.
+- Sound.submit() on submit button press
+- Display result: score fraction, percentage, grade badge from getGrade()
+- Save to latih_grades_{userId}: { paper_id, subject, date, score, max, pct, grade, time_taken_s, answers }
+- Call updateLeaderboard()
+- "Cuba Lagi" resets paper. "Kembali" returns to browser.
+
+Output complete file.
+```
+
+---
+
+### Start Phase 6
+
+```
+Build Phase 6 of Project Latih — Leaderboard.
+
+Produce: `modules/leaderboard.js`
+
+Replaces Papan placeholder in app.html.
+
+STUDENT VIEW:
+- Reads latih_leaderboard. If empty, recomputes with updateLeaderboard().
+- Top 10 by avg_pct. Current student's row highlighted with accent background.
+- Rank (🥇🥈🥉 for top 3, number for rest) | Avatar + Name | Papers Done | Avg % | Best Subject
+- "Muat Semula" button recomputes leaderboard
+- If < 2 students have done papers: "Jemput rakan untuk mula!" empty state
+
+ADMIN VIEW:
+- Export renderAdminLeaderboard(containerId) function for use in admin.html Laporan section
+- Shows all students (no top-10 cap), adds School column, sortable columns
+
+Output complete file.
 ```
 
 ---
@@ -525,24 +702,20 @@ Requirements:
 ### Generate a Paper
 
 ```
-Generate a complete Latih question paper.
+Generate a Latih question paper for the admin to paste into the markdown editor.
 
-Details:
-- Subject: [e.g. Matematik]
-- Year: [e.g. Tahun 4]
-- Topic: [e.g. Pecahan]
-- Questions: [e.g. 5 MCQ worth 1 mark each, 3 fill-in-the-blank worth 2 marks each]
-- Duration: [e.g. 20 minit]
-- Difficulty: [mudah | sederhana | sukar]
-- Author: [e.g. Cikgu Haru]
+Subject: [e.g. Matematik]
+Year: [e.g. Tahun 4]
+Topic: [e.g. Pecahan]
+Questions: [e.g. 5 MCQ worth 1 mark, 3 fill-in-blank worth 2 marks]
+Duration: [e.g. 20 minit]
+Difficulty: [mudah | sederhana | sukar]
+Author: [e.g. Cikgu Haru]
 
-Produce all three files, ready to save:
-1. papers/[folder-name]/question.md
-2. papers/[folder-name]/answers.json
-3. papers/[folder-name]/rubric.json
-
+Output ONLY the question.md content including frontmatter.
 All question text in Bahasa Malaysia.
-Follow the exact format in ANTIGRAVITY.md.
+Include JAWAPAN line for every question.
+Follow exact format in ANTIGRAVITY.md.
 ```
 
 ---
@@ -554,9 +727,9 @@ Fix a bug in Project Latih.
 
 File: [filename]
 Problem: [describe what is broken]
-Expected behaviour: [describe what should happen]
+Expected: [describe correct behaviour]
 
-Output the complete corrected file. Do not output diffs or partial code.
+Output the complete corrected file. No diffs. No partial code.
 ```
 
 ---
@@ -566,42 +739,30 @@ Output the complete corrected file. Do not output diffs or partial code.
 ```
 Add a feature to Project Latih.
 
-Feature: [describe the feature in plain language]
-File(s) to modify: [list the files involved, or say "you decide"]
-Design system: apply the full design system from ANTIGRAVITY.md
+Feature: [describe in plain language]
+Role: [admin | student | both]
+Files to modify: [list, or "you decide"]
 
-Output every modified file in full. Do not output partial code.
-```
-
----
-
-### Build a Specific Screen
-
-```
-Build the [screen name] screen for Project Latih.
-
-Location in app: [which section / nav tab it belongs to]
-Features required:
-- [list each feature or behaviour]
-
-Apply full design system. Mobile-first. Output complete file(s).
+Apply full design system from ANTIGRAVITY.md.
+Output every modified file in full. No partial code.
 ```
 
 ---
 
 ## Current Project Status
 
-Update this section manually after each session.
+Update this manually after each session.
 
 ```
-Phase 1:  [ ] Not started
-Phase 2:  [ ] Not started
-Phase 3:  [✅] Prototype complete — testpad-preview.html
-Phase 4:  [ ] Not started
-Phase 5:  [ ] Not started
-Phase 6:  [ ] Not started
-Phase 7:  [ ] Not started
-Phase 8:  [ ] Not started
+Phase 1 — Login screen:              [ ] Not started
+Phase 2 — Admin shell:               [ ] Not started
+Phase 3 — Paper editor (admin):      [ ] Not started
+Phase 4 — Student app shell:         [ ] Not started
+Phase 5 — Paper engine (student):    [✅] Prototype — testpad-preview.html
+Phase 6 — Leaderboard:               [ ] Not started
+Phase 7 — Profile + grades:          [ ] Not started
+Phase 8 — Kanban + reminders + memo: [ ] Not started
+Phase 9 — Offline + PWA:             [ ] Not started
 
 Last updated: 2026-03-24
 Last built by: Antigravity
@@ -611,16 +772,18 @@ Last built by: Antigravity
 
 ## Important Reminders for Antigravity
 
-1. **Always output complete files** — never partial code, never `// ... rest of file unchanged`
-2. **Never use external CDN links** for JS libraries — reference local `/assets/js/` paths
-3. **Always include the Sound module** in every HTML file that has user interaction
-4. **Always include the Store helpers** in every file that touches localStorage
-5. **All user-facing text** in Bahasa Malaysia unless the user specifies otherwise
-6. **Mobile-first always** — test mentally at 375px before outputting
-7. **No backend, no server, no API** — if a feature requires a server, flag it and offer a localStorage-based alternative
-8. **When in doubt, build simpler** — Latih is for children; complexity is a bug
+1. **Always output complete files** — never `// ... rest unchanged`
+2. **Admin pages** — `Store.requireRole('admin')` at top of every script
+3. **Student pages** — `Store.requireRole('student')` at top of every script
+4. **Never show JAWAPAN lines to students** — strip during markdown parse in paper-engine.js
+5. **Libraries from `/assets/js/`** — never CDN links in production files
+6. **Always include Store, Sound, toast** in every HTML file with user interaction
+7. **Leaderboard updates on every paper submission** — call `updateLeaderboard()` in paper-engine.js
+8. **Mobile-first for student screens** — minimum 375px
+9. **No backend, no server, no API** — flag and offer localStorage alternative if needed
+10. **Simpler is better** — Latih is for primary school children
 
 ---
 
 *ANTIGRAVITY.md — Project Latih command reference.*  
-*Keep this file updated as the project grows.*
+*Bump the "Last updated" date after every session.*
