@@ -583,7 +583,7 @@ select.form-control-latih {
   font-size: 20px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
   .sidebar-backdrop {
