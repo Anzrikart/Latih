@@ -41,7 +41,7 @@ const PaperEditor = (() => {
     const s = document.createElement('style');
     s.id = 'pe-css';
     s.textContent = `
-.pe-shell{display:flex;height:calc(100vh - 104px);overflow:hidden;background:var(--bg);}
+.pe-shell{display:flex;min-height:calc(100vh - 104px);overflow:visible;background:var(--bg);}
 .pe-list{width:250px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;overflow:hidden;}
 .pe-list-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .pe-list-scroll{flex:1;overflow-y:auto;}
