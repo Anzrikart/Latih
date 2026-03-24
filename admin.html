@@ -151,11 +151,38 @@
       #laporanTable  { min-width: 640px; }
 
       /* Page content padding tighter on mobile */
-      .page-content { padding: 14px; }
+      .page-content { padding: 12px; }
 
       /* Stat cards: 2 columns on mobile */
-      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+        .stats-strip { 
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller minimum */
+    gap: 8px; /* Reduce gap on mobile */
+  }
+  
+  .stat-card {
+    padding: 12px 14px; /* Tighten padding */
+  }
+  
+  .stat-value {
+    font-size: 1.4rem; /* Reduce from default */
+  }
+  
+  .stat-label {
+    font-size: 11px; /* Smaller label */
     }
+      @media (max-width: 480px) {
+  .page-content {
+    padding: 10px;
+  }
+  
+  .stats-strip {
+    grid-template-columns: 1fr; /* Stack single column on very small screens */
+  }
+  
+  .page-heading h1 {
+    font-size: 1.2rem; /* Reduce heading size */
+  }
+}
   </style>
 </head>
 <body>
