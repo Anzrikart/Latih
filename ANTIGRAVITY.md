@@ -754,7 +754,7 @@ Output every modified file in full. No partial code.
 Update this manually after each session.
 
 ```
-Phase 1 — Login screen:              [ ] Not started
+Phase 1 — Login screen:              [✅] Complete — index.html + assets/css/latih.css
 Phase 2 — Admin shell:               [ ] Not started
 Phase 3 — Paper editor (admin):      [ ] Not started
 Phase 4 — Student app shell:         [ ] Not started
