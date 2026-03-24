@@ -755,8 +755,8 @@ Update this manually after each session.
 
 ```
 Phase 1 — Login screen:              [✅] Complete — index.html + assets/css/latih.css
-Phase 2 — Admin shell:               [ ] Not started
-Phase 3 — Paper editor (admin):      [ ] Not started
+Phase 2 — Admin shell:               [✅] Complete — admin.html + modules/auth.js + assets/js/latih.js
+Phase 3 — Paper editor (admin):      [✅] Complete — modules/paper-editor.js
 Phase 4 — Student app shell:         [ ] Not started
 Phase 5 — Paper engine (student):    [✅] Prototype — testpad-preview.html
 Phase 6 — Leaderboard:               [ ] Not started
