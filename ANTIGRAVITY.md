@@ -761,7 +761,7 @@ Phase 4 — Student app shell:         [✅] Complete — app.html
 Phase 5 — Paper engine (student):    [✅] Complete — modules/paper-engine.js
 Phase 6 — Leaderboard:               [✅] Complete — modules/leaderboard.js
 Phase 7 — Profile + grades:          [✅] Complete — modules/grade-chart.js
-Phase 8 — Kanban + reminders + memo: [ ] Not started
+Phase 8 — Kanban + reminders + memo: [✅] Complete — modules/kanban.js + modules/reminders.js
 Phase 9 — Offline + PWA:             [ ] Not started
 
 Last updated: 2026-03-24
