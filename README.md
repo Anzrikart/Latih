@@ -338,12 +338,14 @@ No npm. No build pipeline. No terminal commands beyond `git push`.
 
 | Phase | Scope | Status |
 |---|---|---|
-| Phase 1 | Paper engine: Markdown render + answer capture + scoring | ✅ Prototype done |
-| Phase 2 | Multi-user login + localStorage persistence + profile | 🔲 Next |
-| Phase 3 | Grade history + Chart.js dashboard | 🔲 Planned |
-| Phase 4 | Kanban + reminders + memo | 🔲 Planned |
-| Phase 5 | Offline Service Worker + mobile layout + PWA install | 🔲 Planned |
-| Phase 6 | Paper browser UI + difficulty filter + subject filter | 🔲 Planned |
+| Phase 1 | Paper engine: Markdown render + answer capture + scoring | ✅ Done |
+| Phase 2 | Multi-user login + localStorage persistence + profile | ✅ Done |
+| Phase 3 | Grade history + Chart.js dashboard | ✅ Done |
+| Phase 4 | Kanban + reminders + memo | ✅ Done |
+| Phase 5 | Offline Service Worker + mobile layout + PWA install | ✅ Done |
+| Phase 6 | Admin Panel + Paper Editor + result management | ✅ Done |
+| Phase 7 | Multi-language support (Bahasa Melayu / English) | 🔲 Planned |
+| Phase 8 | Parent/Teacher exportable PDF reports | 🔲 Planned |
 
 ---
 
@@ -362,6 +364,17 @@ All question content must be appropriate for primary school children (Year 1–6
 ## Licence
 
 MIT Licence — free to use, modify, and redistribute. Attribution appreciated but not required.
+
+---
+
+## Design Philosophy & Aesthetics
+
+Latih is built with a **Premium, Modern Aesthetic** to provide a professional yet friendly experience for students and educators:
+
+- **Glassmorphism**: Subtle use of backdrop filters and translucent surfaces for a depth-rich, modern feel.
+- **Typography-First**: Using high-quality Google Fonts (*DM Serif Display* for headings, *DM Sans* for body) to ensure excellent readability.
+- **Soft UI**: Rounded corners (`12px` radius), gentle shadows, and a harmonious pastel-neutral color palette.
+- **Micro-animations**: Smooth transitions and hover states that make the interface feel alive and responsive.
 
 ---
 

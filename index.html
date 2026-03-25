@@ -11,8 +11,9 @@
     /* ── Index-specific additions ────────────────────────── */
     .admin-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: var(--radius);
       padding: 18px 20px;
       display: flex;
       align-items: center;
@@ -20,7 +21,9 @@
       gap: 16px;
       flex-wrap: wrap;
       box-shadow: var(--shadow);
+      transition: all var(--transition);
     }
+    .admin-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent); }
     .admin-card-label { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
     .admin-card-title { font-weight: 600; font-size: 15px; color: var(--text); }
   </style>
@@ -63,7 +66,7 @@
     </div>
 
     <!-- Add student form -->
-    <div class="add-student-form" id="addStudentForm" style="display:none;">
+    <div class="add-student-form glass-panel" id="addStudentForm" style="display:none;">
       <h2 style="font-size:1rem;font-weight:600;margin-bottom:16px;font-family:'DM Sans',sans-serif;">Profil Pelajar Baru</h2>
       <div class="form-latih">
         <div class="form-group">

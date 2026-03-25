@@ -36,7 +36,7 @@
       gap: 12px;
       margin-bottom: 24px;
     }
-    .stat-card {
+    .stat-card-premium {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -519,8 +519,8 @@
       totalPapers += g.length;
     });
     stats.innerHTML = `
-      <div class="stat-card"><div class="stat-value">${keys.length}</div><div class="stat-label">Jumlah Pelajar</div></div>
-      <div class="stat-card"><div class="stat-value">${totalPapers}</div><div class="stat-label">Kertas Dibuat</div></div>`;
+      <div class="stat-card-premium"><div class="stat-value">${keys.length}</div><div class="stat-label">Jumlah Pelajar</div></div>
+      <div class="stat-card-premium"><div class="stat-value">${totalPapers}</div><div class="stat-label">Kertas Dibuat</div></div>`;
 
     // Populate student filter in Laporan
     const filterSel = document.getElementById('filterStudent');
@@ -702,9 +702,9 @@
     })();
 
     stats.innerHTML = `
-      <div class="stat-card"><div class="stat-value">${totalPapers}</div><div class="stat-label">Jumlah Ujian</div></div>
-      <div class="stat-card"><div class="stat-value">${avgPct}%</div><div class="stat-label">Purata Kelas</div></div>
-      <div class="stat-card"><div class="stat-value" style="font-size:1.1rem;">${escHtml(topScorer)}</div><div class="stat-label">Pelajar Terbaik</div></div>`;
+      <div class="stat-card-premium"><div class="stat-value">${totalPapers}</div><div class="stat-label">Jumlah Ujian</div></div>
+      <div class="stat-card-premium"><div class="stat-value">${avgPct}%</div><div class="stat-label">Purata Kelas</div></div>
+      <div class="stat-card-premium"><div class="stat-value" style="font-size:1.1rem;">${escHtml(topScorer)}</div><div class="stat-label">Pelajar Terbaik</div></div>`;
 
     // Table
     tbody.innerHTML = '';

@@ -154,8 +154,9 @@
     /* ── Profile section ─────────────────────────────────── */
     .profile-card {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: var(--radius);
       padding: 24px 20px;
       margin-bottom: 16px;
       box-shadow: var(--shadow);
@@ -182,13 +183,16 @@
       margin-bottom: 16px;
     }
     .profile-stat {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--surface-glass);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.4);
       border-radius: var(--radius);
       padding: 12px;
       text-align: center;
       box-shadow: var(--shadow);
+      transition: all var(--transition);
     }
+    .profile-stat:hover { transform: scale(1.05); background: var(--surface); }
     .profile-stat-val {
       font-family: 'DM Serif Display', serif;
       font-size: 1.4rem;
