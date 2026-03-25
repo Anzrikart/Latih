@@ -16,6 +16,30 @@ const Latih = {
 };
 
 /* ══════════════════════════════════════════════════════════
+   Theme System — handles dynamic visual themes
+══════════════════════════════════════════════════════════ */
+const Theme = {
+  apply: (name) => {
+    // Remove existing theme classes
+    document.body.className = document.body.className.split(' ')
+      .filter(c => !c.startsWith('theme-')).join(' ');
+    
+    if (name && name !== 'minimal') {
+      document.body.classList.add('theme-' + name);
+    }
+    Store.set('theme', name);
+  },
+  init: () => {
+    const saved = Store.get('theme') || 'minimal';
+    Theme.apply(saved);
+  }
+};
+
+// Auto-init theme on load
+document.addEventListener('DOMContentLoaded', Theme.init);
+
+
+/* ══════════════════════════════════════════════════════════
    Store — localStorage helper (all keys prefixed latih_)
 ══════════════════════════════════════════════════════════ */
 const Store = {
@@ -25,7 +49,7 @@ const Store = {
   currentUser: ()         => Store.get('session')?.current_user ?? null,
   currentRole: ()         => Store.get('session')?.role ?? null,
   userKey:     (key)      => key + '_' + Store.currentUser(),
-  requireRole: (role)     => { if (Store.currentRole() !== role) location.href = 'index.html'; }
+  requireRole: (role)     => { if (Store.currentRole() !== role) location.href = Latih.root; }
 };
 
 /* ══════════════════════════════════════════════════════════

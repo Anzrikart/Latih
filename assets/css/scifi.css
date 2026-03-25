@@ -1,0 +1,152 @@
+/* 
+   assets/css/scifi.css 
+   Latih Space Academy — Sci-Fi Theme Extension
+*/
+
+:root {
+  --space-bg: #050b1a;
+  --nebula-1: rgba(43, 92, 230, 0.15);
+  --nebula-2: rgba(124, 58, 237, 0.15);
+  --neon-cyan: #00f2ff;
+  --neon-purple: #bc13fe;
+  --neon-green: #39ff14;
+  --cyber-border: rgba(0, 242, 255, 0.3);
+  --cyber-glow: 0 0 15px rgba(0, 242, 255, 0.4);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Animated Starfield Background
+   ══════════════════════════════════════════════════════════ */
+body.scifi-theme {
+  background: var(--space-bg);
+  color: #e0e0e0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+body.scifi-theme::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, var(--nebula-1) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, var(--nebula-2) 0%, transparent 40%);
+  z-index: -2;
+  animation: nebulaPulse 10s ease-in-out infinite alternate;
+}
+
+@keyframes nebulaPulse {
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.1); }
+}
+
+/* Stars layer */
+.starfield {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background: transparent;
+}
+
+.starfield span {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: twinkle var(--d) linear infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   Cybernetic Components
+   ══════════════════════════════════════════════════════════ */
+
+/* Sci-fi Glass Card */
+.scifi-theme .card-latih,
+.scifi-theme .glass-panel,
+.scifi-theme .student-card {
+  background: rgba(10, 20, 40, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--cyber-border);
+  box-shadow: var(--cyber-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.scifi-theme .card-latih::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  animation: scanline 4s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(500%); }
+}
+
+/* Neon Buttons */
+.scifi-theme .btn-primary {
+  background: rgba(0, 242, 255, 0.1);
+  border: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scifi-theme .btn-primary:hover {
+  background: var(--neon-cyan);
+  color: var(--space-bg);
+  box-shadow: 0 0 20px var(--neon-cyan);
+  transform: translateY(-2px);
+}
+
+.scifi-theme .btn-secondary {
+  background: rgba(188, 19, 254, 0.1);
+  border: 2px solid var(--neon-purple);
+  color: var(--neon-purple);
+  box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
+}
+
+.scifi-theme .btn-secondary:hover {
+  background: var(--neon-purple);
+  color: white;
+  box-shadow: 0 0 20px var(--neon-purple);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Interactive Animations
+   ══════════════════════════════════════════════════════════ */
+.scifi-theme .student-card:hover {
+  border-color: var(--neon-cyan);
+  transform: perspective(1000px) rotateX(5deg) scale(1.05);
+  box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3);
+}
+
+.scifi-theme .avatar {
+  border: 2px solid var(--neon-cyan);
+  box-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* Page titles */
+.scifi-theme h1, .scifi-theme .latih-logo {
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+
+/* Dividers */
+.scifi-theme .login-divider::before,
+.scifi-theme .login-divider::after {
+  background: var(--cyber-border);
+}
