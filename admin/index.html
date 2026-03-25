@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Latih — Pentadbir</title>
   <meta name="description" content="Latih Admin Panel — pengurusan kertas soalan, pelajar dan laporan.">
-  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/css/latih.css?v=2">
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/latih.css?v=2">
   <style>
     /* ── Admin-specific styles ──────────────────────────── */
 
@@ -418,13 +418,13 @@
 <!-- ══════════════════════════════════════════════════════
      SCRIPTS
 ══════════════════════════════════════════════════════ -->
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/marked.min.js"></script>
-<script src="assets/js/mermaid.min.js"></script>
-<script src="assets/js/chart.min.js"></script>
-<script src="assets/js/latih.js"></script>
-<script src="modules/auth.js"></script>
-<script src="modules/paper-editor.js"></script>
+<script src="../assets/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/marked.min.js"></script>
+<script src="../assets/js/mermaid.min.js"></script>
+<script src="../assets/js/chart.min.js"></script>
+<script src="../assets/js/latih.js"></script>
+<script src="../modules/auth.js"></script>
+<script src="../modules/paper-editor.js"></script>
 
 <script>
   /* ── Role guard — must be first ─────────────────────── */
@@ -764,7 +764,7 @@
           .filter(k => k.startsWith('latih_'))
           .forEach(k => localStorage.removeItem(k));
         toast('Semua data telah dipadam.', 'info');
-        setTimeout(() => location.href = 'index.html', 800);
+        setTimeout(() => location.href = '../', 800);
       }
     );
     // Make the confirm button more obviously dangerous
@@ -797,17 +797,15 @@
   function handleModalBackdrop(e) { if (e.target === e.currentTarget) closeModal(e.currentTarget.id); }
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape')
-      ['studentModal','confirmModal'].forEach(id => closeModal(id));
+    if (e.key === 'Escape') closeModal('studentModal');
+    if (e.key === 'Escape') closeModal('confirmModal');
   });
 
   /* ══════════════════════════════════════════════════════
-     Init
+     INIT
   ══════════════════════════════════════════════════════ */
   (function init() {
-    // Init paper editor (default section) and student stats
-    PaperEditor.init('paperEditorMount');
-    renderPelajar();
+    switchSection('soalan');
   })();
 </script>
 </body>

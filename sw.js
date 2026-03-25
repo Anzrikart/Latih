@@ -3,8 +3,8 @@ const CACHE_NAME = 'latih-cache-v2';
 const ASSETS = [
   './',
   './index.html',
-  './admin.html',
-  './app.html',
+  './admin/',
+  './app/',
   './manifest.json',
   './assets/img/icon.svg',
   './assets/css/bootstrap.min.css',

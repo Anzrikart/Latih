@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Latih — Pelajar</title>
   <meta name="description" content="Latih — aplikasi latihan pelajar sekolah rendah Malaysia.">
-  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/css/latih.css?v=2">
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/css/latih.css?v=2">
   <style>
     /* ── App layout ─────────────────────────────────────── */
     .student-app {
@@ -256,14 +256,13 @@
     <!-- LATIHAN ──────────────────────────────────────────── -->
     <section class="app-section active" id="sec-latihan">
       <div id="paperEngineMount">
-        <!-- Phase 5 (paper-engine.js) mounts here -->
         <div class="section-head">
           <h2>Latihan</h2>
           <p>Pilih kertas untuk mula belajar.</p>
         </div>
         <div class="placeholder-card">
           <div class="ph-icon">📚</div>
-          <p>Senarai kertas akan dipaparkan di sini (Fasa 5).</p>
+          <p>Senarai kertas akan dipaparkan di sini.</p>
         </div>
       </div>
     </section>
@@ -271,14 +270,13 @@
     <!-- PAPAN ────────────────────────────────────────────── -->
     <section class="app-section" id="sec-papan">
       <div id="leaderboardMount">
-        <!-- Phase 6 (leaderboard.js) mounts here -->
         <div class="section-head">
           <h2>Papan Markah</h2>
           <p>Senarai pelajar terbaik.</p>
         </div>
         <div class="placeholder-card">
           <div class="ph-icon">🏆</div>
-          <p>Papan markah akan dipaparkan di sini (Fasa 6).</p>
+          <p>Papan markah akan dipaparkan di sini.</p>
         </div>
       </div>
     </section>
@@ -286,14 +284,13 @@
     <!-- TUGASAN ──────────────────────────────────────────── -->
     <section class="app-section" id="sec-tugasan">
       <div id="kanbanMount">
-        <!-- Phase 8 (kanban.js) mounts here -->
         <div class="section-head">
           <h2>Tugasan</h2>
           <p>Urus tugasan anda dengan papan Kanban.</p>
         </div>
         <div class="placeholder-card">
           <div class="ph-icon">📋</div>
-          <p>Papan Kanban akan dipaparkan di sini (Fasa 8).</p>
+          <p>Papan Kanban akan dipaparkan di sini.</p>
         </div>
       </div>
     </section>
@@ -301,14 +298,13 @@
     <!-- PERINGATAN ────────────────────────────────────────── -->
     <section class="app-section" id="sec-peringatan">
       <div id="remindersMount">
-        <!-- Phase 8 (reminders.js) mounts here -->
         <div class="section-head">
           <h2>Peringatan</h2>
           <p>Tetapkan peringatan untuk belajar.</p>
         </div>
         <div class="placeholder-card">
           <div class="ph-icon">🔔</div>
-          <p>Peringatan akan dipaparkan di sini (Fasa 8).</p>
+          <p>Peringatan akan dipaparkan di sini.</p>
         </div>
       </div>
     </section>
@@ -352,7 +348,6 @@
       </div>
       <div id="gradeHistoryList"></div>
 
-      <!-- Phase 7 grade chart mount -->
       <div id="gradesMount" style="margin-top:16px;"></div>
     </section>
 
@@ -397,17 +392,17 @@
 </div>
 
 <!-- ── Scripts ─────────────────────────────────────────── -->
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/marked.min.js"></script>
-<script src="assets/js/mermaid.min.js"></script>
-<script src="assets/js/chart.min.js"></script>
-<script src="assets/js/latih.js"></script>
-<script src="modules/auth.js"></script>
-<script src="modules/paper-engine.js"></script>
-<script src="modules/leaderboard.js"></script>
-<script src="modules/grade-chart.js"></script>
-<script src="modules/kanban.js"></script>
-<script src="modules/reminders.js"></script>
+<script src="../assets/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/marked.min.js"></script>
+<script src="../assets/js/mermaid.min.js"></script>
+<script src="../assets/js/chart.min.js"></script>
+<script src="../assets/js/latih.js"></script>
+<script src="../modules/auth.js"></script>
+<script src="../modules/paper-engine.js"></script>
+<script src="../modules/leaderboard.js"></script>
+<script src="../modules/grade-chart.js"></script>
+<script src="../modules/kanban.js"></script>
+<script src="../modules/reminders.js"></script>
 
 <script>
   /* ── Role guard ─────────────────────────────────────── */
@@ -434,47 +429,35 @@
       document.getElementById('tab-' + t).classList.toggle('active', t === name);
     });
 
-    // Lazy-init section modules (Phase 5, 6, 7, 8 will plug in here)
     if (name === 'profil')     renderProfil();
     if (name === 'papan'       && typeof Leaderboard !== 'undefined') Leaderboard.init('leaderboardMount');
     if (name === 'tugasan'     && typeof Kanban      !== 'undefined') Kanban.init('kanbanMount');
     if (name === 'peringatan'  && typeof Reminders   !== 'undefined') Reminders.init('remindersMount');
     if (name === 'latihan'     && typeof PaperEngine !== 'undefined') PaperEngine.init('paperEngineMount');
 
-    // Scroll back to top on tab change
     document.querySelector('.app-content').scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* ══════════════════════════════════════════════════════
-     TOP BAR
-  ══════════════════════════════════════════════════════ */
   function initTopbar() {
     if (!_me.name) return;
-    document.getElementById('topbarName').textContent   = _me.name.split(' ')[0]; // first name only
+    document.getElementById('topbarName').textContent   = _me.name.split(' ')[0];
     document.getElementById('topbarAvatar').textContent = getInitials(_me.name);
     document.getElementById('topbarAvatar').style.background = _me.avatar_color || 'var(--accent)';
   }
 
-  /* ══════════════════════════════════════════════════════
-     PROFIL SECTION
-  ══════════════════════════════════════════════════════ */
   function renderProfil() {
-    // Avatar + identity
     document.getElementById('profileName').textContent   = _me.name   || '—';
     document.getElementById('profileSchool').textContent = _me.school  || '—';
     document.getElementById('profileYear').textContent   = _me.year ? 'Tahun ' + _me.year : '—';
     document.getElementById('profileAvatar').textContent = _me.name ? getInitials(_me.name) : '?';
     document.getElementById('profileAvatar').style.background = _me.avatar_color || 'var(--accent)';
 
-    // Grade stats
     const grades = Store.get('grades_' + _uid) || [];
     document.getElementById('statPapers').textContent = grades.length;
 
     if (grades.length) {
       const avg = Math.round(grades.reduce((s, g) => s + g.pct, 0) / grades.length);
       document.getElementById('statAvg').textContent = avg + '%';
-
-      // Best subject
       const subMap = {};
       grades.forEach(g => {
         subMap[g.subject] = subMap[g.subject] || [];
@@ -489,7 +472,6 @@
       document.getElementById('statBest').textContent = '—';
     }
 
-    // Grade history list (last 10)
     const list = document.getElementById('gradeHistoryList');
     list.innerHTML = '';
     if (!grades.length) {
@@ -517,26 +499,19 @@
       list.appendChild(item);
     });
 
-    // Phase 7: grade chart will mount into #gradesMount
     document.getElementById('gradesPhaseNote').textContent = grades.length > 0 ? `${grades.length} rekod` : '';
     if (typeof GradeChart !== 'undefined') GradeChart.init('gradesMount', _uid);
   }
 
-  /* ══════════════════════════════════════════════════════
-     LOGOUT
-  ══════════════════════════════════════════════════════ */
   function confirmLogout() {
     Sound.tap();
     openModal('logoutModal');
   }
   function doLogout() {
     Store.del('session');
-    location.href = 'index.html';
+    location.href = '../';
   }
 
-  /* ══════════════════════════════════════════════════════
-     MODAL HELPERS
-  ══════════════════════════════════════════════════════ */
   function openModal(id)  { document.getElementById(id).classList.add('visible'); }
   function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
   function handleModalBackdrop(e) { if (e.target === e.currentTarget) closeModal(e.currentTarget.id); }
@@ -545,12 +520,8 @@
     if (e.key === 'Escape') closeModal('logoutModal');
   });
 
-  /* ══════════════════════════════════════════════════════
-     INIT
-  ══════════════════════════════════════════════════════ */
   (function init() {
     initTopbar();
-    // Phase 5: PaperEngine will be initialised here when available
     if (typeof PaperEngine !== 'undefined') PaperEngine.init('paperEngineMount');
   })();
 </script>

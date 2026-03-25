@@ -36,7 +36,7 @@ const Auth = {
    */
   require(expectedRole) {
     if (this.role() !== expectedRole) {
-      location.href = 'index.html';
+      location.href = Latih.root;
     }
   },
 
@@ -45,7 +45,7 @@ const Auth = {
    */
   logout() {
     Store.del('session');
-    location.href = 'index.html';
+    location.href = Latih.root;
   },
 
   /**

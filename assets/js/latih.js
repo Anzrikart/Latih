@@ -5,6 +5,17 @@
  */
 
 /* ══════════════════════════════════════════════════════════
+   Latih Config — handles path depth for Pretty URLs
+══════════════════════════════════════════════════════════ */
+const Latih = {
+  // Returns '../' if in a subfolder like /admin/ or /app/, else './'
+  get root() {
+    const p = location.pathname;
+    return (p.includes('/admin/') || p.includes('/app/')) ? '../' : './';
+  }
+};
+
+/* ══════════════════════════════════════════════════════════
    Store — localStorage helper (all keys prefixed latih_)
 ══════════════════════════════════════════════════════════ */
 const Store = {

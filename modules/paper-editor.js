@@ -473,7 +473,7 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     Sound.tap();
     toast('Mengimbas folder kertas...', 'info');
     try {
-      const resp = await fetch('papers/list.json');
+      const resp = await fetch(Latih.root + 'papers/list.json');
       if (!resp.ok) throw new Error('Could not load papers/list.json');
       const list = await resp.json();
       
@@ -483,7 +483,7 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
       for (const folder of list) {
         try {
           // Fetch rubric.json
-          const rResp = await fetch(`papers/${folder}/rubric.json`);
+          const rResp = await fetch(`${Latih.root}papers/${folder}/rubric.json`);
           if (!rResp.ok) continue;
           const rubric = await rResp.json();
           
@@ -493,12 +493,12 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
           // (Actually, let's always sync to catch updates on disk)
           
           // Fetch question.md
-          const qResp = await fetch(`papers/${folder}/question.md`);
+          const qResp = await fetch(`${Latih.root}papers/${folder}/question.md`);
           if (!qResp.ok) continue;
           const md = await qResp.text();
           
           // Fetch answers.json
-          const aResp = await fetch(`papers/${folder}/answers.json`);
+          const aResp = await fetch(`${Latih.root}papers/${folder}/answers.json`);
           if (!aResp.ok) continue;
           const ans = await aResp.json();
           
