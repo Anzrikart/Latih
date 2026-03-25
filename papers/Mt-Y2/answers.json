@@ -1,0 +1,10 @@
+{
+    "paper_id": "matematik-tahun2-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "3 dalam 734 berada di nilai tempat puluh." },
+        { "id": "S2", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "5 x 4 = 20." },
+        { "id": "S3", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Suku ialah satu daripada empat bahagian yang sama saiz." },
+        { "id": "S4", "type": "fill", "correct": "177", "marks": 2, "auto_score": true, "explanation": "145 + 32 = 177." },
+        { "id": "S5", "type": "fill", "correct": "15", "marks": 2, "auto_score": true, "explanation": "Panjang ialah 15 cm." }
+    ]
+}

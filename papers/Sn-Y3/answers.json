@@ -1,0 +1,8 @@
+{
+    "paper_id": "sains-tahun3-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Gigi taring yang tajam digunakan untuk menyiat makanan." },
+        { "id": "S2", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Plastik biasanya kurang tumpat daripada air." },
+        { "id": "S3", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Monyet makan buah-buahan dan serangga." }
+    ]
+}

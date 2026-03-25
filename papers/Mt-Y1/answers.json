@@ -1,0 +1,10 @@
+{
+    "paper_id": "matematik-tahun1-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Lapan ditulis sebagai 8." },
+        { "id": "S2", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "3 + 2 = 5." },
+        { "id": "S3", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Segi tiga mempunyai 3 bucu." },
+        { "id": "S4", "type": "fill", "correct": "9", "marks": 2, "auto_score": true, "explanation": "7 tambah 2 ialah 9." },
+        { "id": "S5", "type": "fill", "correct": "6", "marks": 2, "auto_score": true, "explanation": "10 tolak 4 ialah 6." }
+    ]
+}

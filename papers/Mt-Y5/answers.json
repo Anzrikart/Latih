@@ -1,0 +1,10 @@
+{
+    "paper_id": "matematik-tahun5-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "7 dalam 872 345 berada di nilai tempat puluh ribu (70 000)." },
+        { "id": "S2", "type": "mcq", "correct": "A", "marks": 2, "auto_score": true, "explanation": "20% x RM80 = (20/100) x 80 = RM16." },
+        { "id": "S3", "type": "mcq", "correct": "A", "marks": 2, "auto_score": true, "explanation": "Gerakkan titik perpuluhan satu kali ke kanan: 4.5." },
+        { "id": "S4", "type": "fill", "correct": "8", "marks": 2, "auto_score": true, "explanation": "(24 + 16) = 40. 40 bahagi 5 = 8." },
+        { "id": "S5", "type": "fill", "correct": "15", "marks": 2, "auto_score": true, "explanation": "(12 + 15 + 18) / 3 = 45 / 3 = 15." }
+    ]
+}

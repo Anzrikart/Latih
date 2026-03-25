@@ -1,0 +1,8 @@
+{
+    "paper_id": "sains-tahun5-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Bonggol menyimpan lemak sebagai sumber tenaga dan air." },
+        { "id": "S2", "type": "mcq", "correct": "D", "marks": 2, "auto_score": true, "explanation": "Tenaga elektrik boleh ditukarkan kepada tenaga bunyi, cahaya dan kinetik." },
+        { "id": "S3", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Habar menyebabkan zarah-zarah dalam bahan bergerak lebih laju dan mengembang." }
+    ]
+}

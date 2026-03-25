@@ -266,7 +266,6 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     const id     = _id || ('paper_' + Date.now());
     const exist  = papers[id] || {};
 
-    // Sync answers from DOM
     const rows = [];
     document.querySelectorAll('#peAnsTbody tr').forEach(tr => {
       const inp = tr.querySelectorAll('input,select');
@@ -348,23 +347,23 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     Sound.tap();
     const ta = document.getElementById('peTa'); if (!ta) return;
     const s = ta.selectionStart, e = ta.selectionEnd;
-    const sel = ta.value.substring(s, e) || 'teks';
-    ta.setRangeText(b + sel + a, s, e, 'select'); ta.focus();
+    const selectStr = ta.value.substring(s, e) || 'teks';
+    ta.setRangeText(b + selectStr + a, s, e, 'select'); ta.focus();
   }
 
   function wrapBlock() {
     Sound.tap();
     const ta = document.getElementById('peTa'); if (!ta) return;
     const s = ta.selectionStart, e = ta.selectionEnd;
-    const sel = ta.value.substring(s, e) || '';
-    ta.setRangeText('```\n' + sel + '\n```', s, e, 'end'); ta.focus();
+    const selectStr = ta.value.substring(s, e) || '';
+    ta.setRangeText('```\n' + selectStr + '\n```', s, e, 'end'); ta.focus();
   }
 
   function insertMermaid() {
     Sound.tap();
     const ta = document.getElementById('peTa'); if (!ta) return;
-    const p  = ta.selectionStart;
-    ta.setRangeText('\n```mermaid\npie title Tajuk\n  "Bahagian A" : 40\n  "Bahagian B" : 60\n```\n', p, p, 'end');
+    const cursor = ta.selectionStart;
+    ta.setRangeText('\n```mermaid\npie title Tajuk\n  "Bahagian A" : 40\n  "Bahagian B" : 60\n```\n', cursor, cursor, 'end');
     ta.focus();
   }
 
@@ -372,8 +371,8 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     Sound.tap();
     const ta  = document.getElementById('peTa'); if (!ta) return;
     const num = _answers.length + 1;
-    const p   = ta.selectionStart;
-    ta.setRangeText(`\n**S${num}** [mcq:1]\nSoalan di sini...\n\n- [ ] A. Pilihan satu\n- [ ] B. Pilihan dua\n- [ ] C. Pilihan tiga\n- [ ] D. Pilihan empat\n\n**JAWAPAN**: A\n\n---\n`, p, p, 'end');
+    const cursor = ta.selectionStart;
+    ta.setRangeText(`\n**S${num}** [mcq:1]\nSoalan di sini...\n\n- [ ] A. Pilihan satu\n- [ ] B. Pilihan dua\n- [ ] C. Pilihan tiga\n- [ ] D. Pilihan empat\n\n**JAWAPAN**: A\n\n---\n`, cursor, cursor, 'end');
     ta.focus();
     _answers.push({ id: 'S' + num, type: 'mcq', correct: 'A', marks: 1 });
     _renderAns();
@@ -386,7 +385,6 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     Sound.tap();
     _prev = !_prev;
     if (_prev) {
-      _show('peTa',   'none'); // peTa is a textarea, toggling via display
       document.getElementById('peTa').style.display = 'none';
       document.getElementById('pePrev').style.display = 'block';
       document.getElementById('pePrevBtn').classList.add('on');
@@ -416,9 +414,7 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     } else {
       prev.textContent = md;
     }
-    if (_mReady) {
-      try { await mermaid.run({ nodes: prev.querySelectorAll('pre code') }); } catch {}
-    }
+    if (_mReady) try { await mermaid.run({ nodes: prev.querySelectorAll('pre code') }); } catch {}
   }
 
   /* ══════════════════════════════════════════════════════
@@ -472,64 +468,13 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
   async function syncFromRegistry() {
     Sound.tap();
     toast('Mengimbas folder kertas...', 'info');
-    try {
-      const resp = await fetch(Latih.root + 'papers/list.json');
-      if (!resp.ok) throw new Error('Could not load papers/list.json');
-      const list = await resp.json();
-      
-      let newCount = 0;
-      const papers = Store.get('papers') || {};
-
-      for (const folder of list) {
-        try {
-          // Fetch rubric.json
-          const rResp = await fetch(`${Latih.root}papers/${folder}/rubric.json`);
-          if (!rResp.ok) continue;
-          const rubric = await rResp.json();
-          
-          const id = rubric.paper_id || folder;
-          
-          // Only skip if already exists and we don't want to overwrite 
-          // (Actually, let's always sync to catch updates on disk)
-          
-          // Fetch question.md
-          const qResp = await fetch(`${Latih.root}papers/${folder}/question.md`);
-          if (!qResp.ok) continue;
-          const md = await qResp.text();
-          
-          // Fetch answers.json
-          const aResp = await fetch(`${Latih.root}papers/${folder}/answers.json`);
-          if (!aResp.ok) continue;
-          const ans = await aResp.json();
-          
-          papers[id] = {
-            id,
-            title:            rubric.title,
-            subject:          rubric.subject,
-            year:             rubric.year,
-            duration_minutes: rubric.duration_minutes,
-            total_marks:      rubric.total_marks,
-            difficulty:       rubric.difficulty,
-            tags:             rubric.tags,
-            published:        rubric.published ?? false,
-            created:          rubric.created || new Date().toISOString(),
-            author:           rubric.author || 'Sistem',
-            question_md:      md,
-            answers:          ans
-          };
-          newCount++;
-        } catch (e) {
-          console.error(`Error syncing ${folder}:`, e);
-        }
-      }
-      
-      Store.set('papers', papers);
+    const ok = await Store.syncPapers();
+    if (ok) {
       renderList();
       Sound.save();
-      toast(`Berjaya mengimbas ${newCount} kertas!`, 'success');
-    } catch (err) {
+      toast('Selesai mengimbas kertas.', 'success');
+    } else {
       toast('Gagal mengimbas registry kertas.', 'error');
-      console.error(err);
     }
   }
 

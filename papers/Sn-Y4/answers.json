@@ -1,0 +1,8 @@
+{
+    "paper_id": "sains-tahun4-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Fotosintesis memerlukan cahaya matahari, air dan karbon dioksida." },
+        { "id": "S2", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Peparu adalah organ pernafasan manusia." },
+        { "id": "S3", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Matahari membekalkan tenaga cahaya dan haba kepada Bumi." }
+    ]
+}

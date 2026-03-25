@@ -73,26 +73,37 @@ const Clock = {
 ══════════════════════════════════════════════════════════ */
 const Sound = (() => {
   let ctx;
-  const init = () => { try { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} };
+  const init = () => { 
+    try { 
+      if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); 
+    } catch(e){ console.warn('AudioContext failed:', e); } 
+  };
   const tone = (freq, dur, type = 'sine', vol = 0.1) => {
-    init(); if (!ctx) return;
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime);
-    g.gain.setValueAtTime(vol, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    o.start(); o.stop(ctx.currentTime + dur);
+    try {
+      init(); 
+      if (!ctx || ctx.state === 'closed') return;
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime);
+      g.gain.setValueAtTime(vol, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+      o.start(); o.stop(ctx.currentTime + dur);
+    } catch(e) { console.warn('Sound error:', e); }
   };
   return {
     tap:     () => tone(600, 0.1, 'sine', 0.05),
     success: () => { tone(500, 0.3, 'triangle', 0.1); setTimeout(() => tone(1000, 0.3, 'triangle', 0.1), 100); },
     error:   () => tone(150, 0.4, 'sawtooth', 0.08),
     blip:    () => tone(1200, 0.05, 'square', 0.03),
+    wrong:   () => { tone(200, 0.2, 'sawtooth', 0.1); setTimeout(() => tone(150, 0.3, 'sawtooth', 0.1), 150); },
+    save:    () => { tone(800, 0.2, 'sine', 0.05); setTimeout(() => tone(1200, 0.2, 'sine', 0.05), 100); },
     play:    (type) => {
       if (type === 'tap') Sound.tap();
       if (type === 'success') Sound.success();
       if (type === 'error') Sound.error();
       if (type === 'blip') Sound.blip();
+      if (type === 'wrong') Sound.wrong();
+      if (type === 'save') Sound.save();
     }
   };
 })();
@@ -116,8 +127,10 @@ const Store = {
   currentRole: ()         => Store.get('session')?.role ?? null,
   userKey:     (key)      => key + '_' + Store.currentUser(),
   requireRole: (role) => {
-    if (Store.currentRole() !== role) {
-      location.href = Latih.root + 'index.html';
+    const cur = Store.currentRole();
+    if (cur !== role) {
+      console.warn(`Access denied. Expected ${role}, got ${cur}. Redirecting...`);
+      location.href = Latih.root;
     }
   },
   getRank: (score) => {
@@ -126,6 +139,41 @@ const Store = {
     if (score >= 200)  return { title: 'Space Ace', badge: '🚀' };
     if (score >= 50)   return { title: 'Pilot', badge: '🛸' };
     return { title: 'Novice Cadet', badge: '🧑‍🚀' };
+  },
+  syncPapers: async () => {
+    try {
+      const resp = await fetch(Latih.root + 'papers/list.json');
+      if (!resp.ok) return false;
+      const list = await resp.json();
+      const papers = Store.get('papers') || {};
+      for (const folder of list) {
+        try {
+          const rResp = await fetch(`${Latih.root}papers/${folder}/rubric.json`);
+          if (!rResp.ok) continue;
+          const rubric = await rResp.json();
+          const qResp = await fetch(`${Latih.root}papers/${folder}/questions.md`);
+          if (!qResp.ok) continue;
+          const md = await qResp.text();
+          const aResp = await fetch(`${Latih.root}papers/${folder}/answers.json`);
+          if (!aResp.ok) continue;
+          const ansData = await aResp.json();
+          const ans = ansData.questions || ansData;
+          
+          papers[rubric.paper_id || folder] = {
+            id: rubric.paper_id || folder,
+            title: rubric.title, subject: rubric.subject, year: rubric.year,
+            duration_minutes: rubric.duration_minutes, total_marks: rubric.total_marks,
+            difficulty: rubric.difficulty, tags: rubric.tags,
+            published: rubric.published ?? true,
+            created: rubric.created || new Date().toISOString(),
+            author: rubric.author || 'Sistem',
+            question_md: md, answers: ans
+          };
+        } catch(e){}
+      }
+      Store.set('papers', papers);
+      return true;
+    } catch(e){ return false; }
   }
 };
 

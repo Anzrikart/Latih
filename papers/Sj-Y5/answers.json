@@ -1,0 +1,8 @@
+{
+    "paper_id": "sejarah-tahun5-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Jata Negara adalah simbol rasmi kedaulatan Malaysia." },
+        { "id": "S2", "type": "mcq", "correct": "A", "marks": 2, "auto_score": true, "explanation": "Tunku Abdul Rahman mengetuai rombongan kemerdekaan ke London." },
+        { "id": "S3", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Pelantikan Yang di-Pertuan Agong dilakukan mengikut sistem penggiliran lima tahun." }
+    ]
+}

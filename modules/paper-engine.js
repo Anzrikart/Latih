@@ -31,8 +31,12 @@ const PaperEngine = (() => {
       _injectCSS();
       if (_mReady) mermaid.initialize({ startOnLoad: false, theme: 'neutral', fontFamily: "'DM Sans',sans-serif" });
     }
-    _loadPapers();
-    _renderBrowseView();
+    if (Object.keys(Store.get('papers') || {}).length === 0) {
+      Store.syncPapers().then(() => { _loadPapers(); _renderBrowseView(); });
+    } else {
+      _loadPapers();
+      _renderBrowseView();
+    }
   }
 
   /* ── CSS ──────────────────────────────────────────── */

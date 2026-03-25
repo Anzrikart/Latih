@@ -1,0 +1,8 @@
+{
+    "paper_id": "sains-tahun6-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Mukor adalah sejenis kulat yang biasa tumbuh pada roti." },
+        { "id": "S2", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Pengawetan melambatkan kerosakan makanan oleh mikroorganisma." },
+        { "id": "S3", "type": "mcq", "correct": "D", "marks": 2, "auto_score": true, "explanation": "Baji mempunyai hujung yang tajam untuk memisahkan atau memotong objek." }
+    ]
+}

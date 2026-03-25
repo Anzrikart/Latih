@@ -1,0 +1,8 @@
+{
+    "paper_id": "sejarah-tahun4-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "A", "marks": 2, "auto_score": true, "explanation": "Sumber primer adalah sumber pertama seperti artifak dan dokumen asal." },
+        { "id": "S2", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Peningkatan suhu menyebabkan pencairan air batu." },
+        { "id": "S3", "type": "mcq", "correct": "D", "marks": 2, "auto_score": true, "explanation": "Kedah Tua adalah kerajaan awal yang penting di Lembah Bujang." }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "paper_id": "sains-tahun1-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Kucing memerlukan makanan dan air untuk hidup." },
+        { "id": "S2", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Mata adalah deria penglihatan." },
+        { "id": "S3", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Akar menyerap air dan nutrien dari tanah." }
+    ]
+}

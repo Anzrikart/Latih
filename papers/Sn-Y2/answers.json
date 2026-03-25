@@ -1,0 +1,8 @@
+{
+    "paper_id": "sains-tahun2-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Manusia memerlukan makanan, air dan udara untuk hidup." },
+        { "id": "S2", "type": "mcq", "correct": "A", "marks": 2, "auto_score": true, "explanation": "Katak bermula dari telur, kemudian menjadi berudu." },
+        { "id": "S3", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Sel kering membekalkan tenaga dalam litar ringkas." }
+    ]
+}

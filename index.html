@@ -158,6 +158,7 @@
   </button>
 
   <script src="assets/js/latih.js"></script>
+  <script src="modules/auth.js"></script>
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <script>
     /* ══════════════════════════════════════════════
@@ -269,9 +270,11 @@
        Student login
     ══════════════════════════════════════════════ */
     function loginStudent(id) {
-      Sound.tap();
-      Store.set('session', { current_user: id, role: 'student' });
-      location.href = 'app/';
+      try {
+        Sound.tap();
+        Auth.loginStudent(id);
+        location.href = 'app/index.html';
+      } catch(e) { console.error('Login error:', e); }
     }
 
     /* ══════════════════════════════════════════════
@@ -280,16 +283,18 @@
     let addFormOpen = false;
 
     function toggleAddForm() {
-      Sound.tap();
-      addFormOpen = !addFormOpen;
-      const form = document.getElementById('addStudentForm');
-      const btn  = document.getElementById('addStudentToggleBtn');
-      form.style.display = addFormOpen ? 'block' : 'none';
-      btn.textContent    = addFormOpen ? '✕ Tutup' : '＋ Tambah Pelajar';
-      if (addFormOpen) {
-        resetAddForm();
-        document.getElementById('studentName').focus();
-      }
+      try {
+        Sound.tap();
+        addFormOpen = !addFormOpen;
+        const form = document.getElementById('addStudentForm');
+        const btn  = document.getElementById('addStudentToggleBtn');
+        form.style.display = addFormOpen ? 'block' : 'none';
+        btn.textContent    = addFormOpen ? '✕ Tutup' : '＋ Tambah Pelajar';
+        if (addFormOpen) {
+          resetAddForm();
+          document.getElementById('studentName').focus();
+        }
+      } catch(e) { console.error('Toggle form error:', e); }
     }
 
     function resetAddForm() {
@@ -304,23 +309,25 @@
     }
 
     function saveNewStudent() {
-      Sound.tap();
-      const name   = document.getElementById('studentName').value.trim();
-      const school = document.getElementById('studentSchool').value.trim();
-      const year   = document.getElementById('studentYear').value;
+      try {
+        Sound.tap();
+        const name   = document.getElementById('studentName').value.trim();
+        const school = document.getElementById('studentSchool').value.trim();
+        const year   = document.getElementById('studentYear').value;
 
-      if (!name)   { toast('Sila masukkan nama pelajar.', 'error');  return; }
-      if (!school) { toast('Sila masukkan nama sekolah.', 'error');  return; }
-      if (!year)   { toast('Sila pilih tahun pelajaran.', 'error'); return; }
+        if (!name)   { toast('Sila masukkan nama pelajar.', 'error');  return; }
+        if (!school) { toast('Sila masukkan nama sekolah.', 'error');  return; }
+        if (!year)   { toast('Sila pilih tahun pelajaran.', 'error'); return; }
 
-      const users = Store.get('users') || {};
-      const id    = 'user_' + Date.now();
-      users[id]   = { id, name, school, year: parseInt(year), avatar_color: selectedColour, avatar_img: selectedAvatarImg, created: new Date().toISOString() };
-      Store.set('users', users);
-      Sound.save();
-      toast(`Profil ${name} disimpan!`, 'success');
-      toggleAddForm();
-      renderStudents();
+        const users = Store.get('users') || {};
+        const id    = 'user_' + Date.now();
+        users[id]   = { id, name, school, year: parseInt(year), avatar_color: selectedColour, avatar_img: selectedAvatarImg, created: new Date().toISOString() };
+        Store.set('users', users);
+        Sound.save();
+        toast(`Profil ${name} disimpan!`, 'success');
+        toggleAddForm();
+        renderStudents();
+      } catch(e) { console.error('Save student error:', e); toast('Gagal menyimpan profil.', 'error'); }
     }
 
     /* ══════════════════════════════════════════════
@@ -337,16 +344,18 @@
     }
 
     function confirmDelete() {
-      if (!_deleteTargetId) return;
-      const users = Store.get('users') || {};
-      delete users[_deleteTargetId];
-      Store.set('users', users);
-      ['grades_','kanban_','memos_','reminders_','timetable_'].forEach(prefix =>
-        Store.del(prefix + _deleteTargetId));
-      _deleteTargetId = null;
-      closeModal('deleteModal');
-      toast('Profil dipadam.', 'info');
-      renderStudents();
+      try {
+        if (!_deleteTargetId) return;
+        const users = Store.get('users') || {};
+        delete users[_deleteTargetId];
+        Store.set('users', users);
+        ['grades_','kanban_','memos_','reminders_','timetable_'].forEach(prefix =>
+          Store.del(prefix + _deleteTargetId));
+        _deleteTargetId = null;
+        closeModal('deleteModal');
+        toast('Profil dipadam.', 'info');
+        renderStudents();
+      } catch(e) { console.error('Delete error:', e); }
     }
 
     /* ══════════════════════════════════════════════
@@ -358,32 +367,34 @@
     function hashPin(pin) { return btoa(pin + 'latih_salt_2026'); }
 
     function getPinValue() {
-      return ['p0','p1','p2','p3'].map(id => document.getElementById(id).value).join('');
+      return ['p0', 'p1', 'p2', 'p3'].map(id => document.getElementById(id).value).join('');
     }
 
     function clearPinInputs() {
-      ['p0','p1','p2','p3'].forEach(id => { document.getElementById(id).value = ''; });
+      ['p0', 'p1', 'p2', 'p3'].forEach(id => { document.getElementById(id).value = ''; });
     }
 
     function openAdminModal() {
-      Sound.tap();
-      clearPinInputs();
-      document.getElementById('pinError').textContent = '';
+      try {
+        Sound.tap();
+        clearPinInputs();
+        document.getElementById('pinError').textContent = '';
 
-      const stored = Store.get('admin_pin');
-      if (!stored) {
-        pinMode = 'setup';
-        document.getElementById('pinModalTitle').textContent    = 'Tetapkan PIN Pentadbir';
-        document.getElementById('pinModalSubtitle').textContent = 'Cipta PIN 4 digit untuk akaun pentadbir.';
-        document.getElementById('pinSubmitBtn').textContent     = 'Teruskan';
-      } else {
-        pinMode = 'login';
-        document.getElementById('pinModalTitle').textContent    = 'Masuk sebagai Pentadbir';
-        document.getElementById('pinModalSubtitle').textContent = 'Masukkan PIN 4 digit anda.';
-        document.getElementById('pinSubmitBtn').textContent     = 'Masuk';
-      }
-      openModal('pinModal');
-      setTimeout(() => document.getElementById('p0').focus(), 120);
+        const stored = Store.get('admin_pin');
+        if (!stored) {
+          pinMode = 'setup';
+          document.getElementById('pinModalTitle').textContent    = 'Tetapkan PIN Pentadbir';
+          document.getElementById('pinModalSubtitle').textContent = 'Cipta PIN 4 digit untuk akaun pentadbir.';
+          document.getElementById('pinSubmitBtn').textContent     = 'Teruskan';
+        } else {
+          pinMode = 'login';
+          document.getElementById('pinModalTitle').textContent    = 'Masuk sebagai Pentadbir';
+          document.getElementById('pinModalSubtitle').textContent = 'Masukkan PIN 4 digit anda.';
+          document.getElementById('pinSubmitBtn').textContent     = 'Masuk';
+        }
+        openModal('pinModal');
+        setTimeout(() => document.getElementById('p0').focus(), 120);
+      } catch(e) { console.error('Open admin error:', e); }
     }
 
     function pinInput(idx) {
@@ -400,50 +411,52 @@
     }
 
     function submitPin() {
-      Sound.tap();
-      const pin = getPinValue();
-      if (pin.length < 4) {
-        document.getElementById('pinError').textContent = 'Sila masukkan 4 digit.';
-        return;
-      }
-      document.getElementById('pinError').textContent = '';
-
-      if (pinMode === 'login') {
-        if (hashPin(pin) === Store.get('admin_pin')) {
-          Sound.save();
-          Store.set('session', { role: 'admin' });
-          location.href = 'admin/';
-        } else {
-          Sound.wrong();
-          document.getElementById('pinError').textContent = 'PIN salah. Cuba lagi.';
-          clearPinInputs();
-          document.getElementById('p0').focus();
-        }
-
-      } else if (pinMode === 'setup') {
-        _setupPin = pin;
-        pinMode = 'setup2';
-        document.getElementById('pinModalTitle').textContent    = 'Sahkan PIN Anda';
-        document.getElementById('pinModalSubtitle').textContent = 'Masukkan semula PIN untuk pengesahan.';
-        document.getElementById('pinSubmitBtn').textContent     = 'Simpan PIN';
-        clearPinInputs();
-        document.getElementById('p0').focus();
-
-      } else if (pinMode === 'setup2') {
-        if (pin !== _setupPin) {
-          Sound.wrong();
-          document.getElementById('pinError').textContent = 'PIN tidak sepadan. Cuba lagi.';
-          clearPinInputs();
-          document.getElementById('p0').focus();
+      try {
+        Sound.tap();
+        const pin = getPinValue();
+        if (pin.length < 4) {
+          document.getElementById('pinError').textContent = 'Sila masukkan 4 digit.';
           return;
         }
-        Store.set('admin_pin', hashPin(pin));
-        Sound.save();
-        toast('PIN berjaya ditetapkan!', 'success');
-        closeModal('pinModal');
-        Store.set('session', { role: 'admin' });
-        location.href = 'admin/';
-      }
+        document.getElementById('pinError').textContent = '';
+
+        if (pinMode === 'login') {
+          if (hashPin(pin) === Store.get('admin_pin')) {
+            Sound.save();
+            Auth.loginAdmin();
+            location.href = 'admin/index.html';
+          } else {
+            Sound.wrong();
+            document.getElementById('pinError').textContent = 'PIN salah. Cuba lagi.';
+            clearPinInputs();
+            document.getElementById('p0').focus();
+          }
+
+        } else if (pinMode === 'setup') {
+          _setupPin = pin;
+          pinMode = 'setup2';
+          document.getElementById('pinModalTitle').textContent    = 'Sahkan PIN Anda';
+          document.getElementById('pinModalSubtitle').textContent = 'Masukkan semula PIN untuk pengesahan.';
+          document.getElementById('pinSubmitBtn').textContent     = 'Simpan PIN';
+          clearPinInputs();
+          document.getElementById('p0').focus();
+
+        } else if (pinMode === 'setup2') {
+          if (pin !== _setupPin) {
+            Sound.wrong();
+            document.getElementById('pinError').textContent = 'PIN tidak sepadan. Cuba lagi.';
+            clearPinInputs();
+            document.getElementById('p0').focus();
+            return;
+          }
+          Auth.savePin(pin);
+          Sound.save();
+          toast('PIN berjaya ditetapkan!', 'success');
+          closeModal('pinModal');
+          Auth.loginAdmin();
+          location.href = 'admin/index.html';
+        }
+      } catch(e) { console.error('Submit PIN error:', e); }
     }
 
     /* ══════════════════════════════════════════════
@@ -458,16 +471,20 @@
         ['pinModal','deleteModal'].forEach(id => closeModal(id));
     });
 
-    /* ══════════════════════════════════════════════
+    /* ═════════════════════
        Init
-    ══════════════════════════════════════════════ */
+    ══════════════════════ */
     (function init() {
-      if (!Store.get('admin_pin')) {
-        document.getElementById('adminCardTitle').textContent = 'Tetapkan PIN Pentadbir';
-        document.getElementById('adminBtn').textContent       = 'Tetapkan PIN';
-      }
-      initSwatches();
-      renderStudents();
+      try {
+        if (!Store.get('admin_pin')) {
+          const cardTitle = document.getElementById('adminCardTitle');
+          const adminBtn  = document.getElementById('adminBtn');
+          if (cardTitle) cardTitle.textContent = 'Tetapkan PIN Pentadbir';
+          if (adminBtn)  adminBtn.textContent       = 'Tetapkan PIN';
+        }
+        initSwatches();
+        renderStudents();
+      } catch(e) { console.error('Init error:', e); }
     })();
   </script>
 </body>

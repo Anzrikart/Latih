@@ -1,0 +1,10 @@
+{
+    "paper_id": "matematik-tahun3-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Digit puluh ialah 6 (lebih dari 5), maka tambah 1 pada ratus. 4 562 jadi 4 600." },
+        { "id": "S2", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "0.35 x 100% = 35%." },
+        { "id": "S3", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Jarum panjang di 6 bermaksud 30 minit. Maka 4:30." },
+        { "id": "S4", "type": "fill", "correct": "7", "marks": 2, "auto_score": true, "explanation": "56 bahagi 8 ialah 7." },
+        { "id": "S5", "type": "fill", "correct": "16.80", "marks": 2, "auto_score": true, "explanation": "RM12.50 + RM4.30 = RM16.80." }
+    ]
+}

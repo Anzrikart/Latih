@@ -1,0 +1,8 @@
+{
+    "paper_id": "sejarah-tahun6-pksr1",
+    "questions": [
+        { "id": "S1", "type": "mcq", "correct": "B", "marks": 2, "auto_score": true, "explanation": "Malaysia terbentuk secara rasmi pada 16 September 1963." },
+        { "id": "S2", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "SUKOM '98 adalah pencapaian besar kompleks sukan Bukit Jalil." },
+        { "id": "S3", "type": "mcq", "correct": "C", "marks": 2, "auto_score": true, "explanation": "Bunga Raya (Hibiscus rosa-sinensis) dipilih sebagai bunga kebangsaan pada 1960." }
+    ]
+}
