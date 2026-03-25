@@ -34,7 +34,10 @@
   <!-- ── Header ─────────────────────────────────────────── -->
   <header class="login-header">
     <div class="latih-logo">Latih<span>.</span></div>
-    <div class="latih-tagline">berlatih · belajar · berjaya</div>
+    <div class="app-clock" style="font-family:'DM Sans',sans-serif;font-size:12px;display:flex;flex-direction:column;align-items:flex-end;">
+      <span class="live-clock-time" style="font-weight:700;font-size:14px;">00:00:00</span>
+      <span class="live-clock-date" style="opacity:0.7;">1 Jan 2026</span>
+    </div>
   </header>
 
   <!-- ── Admin section ──────────────────────────────────── -->
@@ -148,6 +151,11 @@
       </div>
     </div>
   </div>
+
+  <!-- Floating Theme Button -->
+  <button id="themeFab" class="theme-fab" onclick="Theme.cycle()" aria-label="Tukar Tema">
+    <span class="fab-icon">🎨</span>
+  </button>
 
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <script>

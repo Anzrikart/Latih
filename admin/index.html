@@ -214,6 +214,10 @@
         ☰
       </button>
       <div style="font-weight:600;font-size:14px;color:var(--text2);flex:1;" id="topbarTitle">Soalan</div>
+      <div class="app-clock" style="text-align:right;margin-right:16px;">
+        <div class="live-clock-time" style="font-weight:700;font-size:14px;color:var(--text);">00:00:00</div>
+        <div class="live-clock-date" style="font-size:11px;color:var(--text3);">1 Jan 2026</div>
+      </div>
       <button class="btn-latih btn-ghost btn-sm topbar-logout-text" onclick="confirmLogout()">Log Keluar</button>
       <button class="btn-icon topbar-logout-icon" onclick="confirmLogout()" aria-label="Log Keluar" style="display:none;">↩</button>
 
@@ -841,5 +845,10 @@
     switchSection('soalan');
   })();
 </script>
+  <!-- Floating Theme Button -->
+  <button id="themeFab" class="theme-fab" onclick="Theme.cycle()" aria-label="Tukar Tema">
+    <span class="fab-icon">🎨</span>
+  </button>
 </body>
+
 </html>

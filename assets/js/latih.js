@@ -19,8 +19,8 @@ const Latih = {
    Theme System — handles dynamic visual themes
 ══════════════════════════════════════════════════════════ */
 const Theme = {
+  list: ['minimal', 'scifi', 'lcar', 'ascii'],
   apply: (name) => {
-    // Remove existing theme classes
     document.body.className = document.body.className.split(' ')
       .filter(c => !c.startsWith('theme-')).join(' ');
     
@@ -28,6 +28,21 @@ const Theme = {
       document.body.classList.add('theme-' + name);
     }
     Store.set('theme', name);
+    Theme.updateFAB();
+  },
+  cycle: () => {
+    const current = Store.get('theme') || 'minimal';
+    let idx = Theme.list.indexOf(current);
+    let next = Theme.list[(idx + 1) % Theme.list.length];
+    Theme.apply(next);
+    if (typeof Sound !== 'undefined') Sound.tap();
+  },
+  updateFAB: () => {
+    const fab = document.getElementById('themeFab');
+    if (!fab) return;
+    const current = Store.get('theme') || 'minimal';
+    const icons = { minimal: '🎨', scifi: '🚀', lcar: '🖖', ascii: '💾' };
+    fab.querySelector('.fab-icon').textContent = icons[current];
   },
   init: () => {
     const saved = Store.get('theme') || 'minimal';
@@ -35,8 +50,29 @@ const Theme = {
   }
 };
 
-// Auto-init theme on load
-document.addEventListener('DOMContentLoaded', Theme.init);
+/* ══════════════════════════════════════════════════════════
+   Clock System — live time & date
+══════════════════════════════════════════════════════════ */
+const Clock = {
+  tick: () => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateStr = now.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+    
+    document.querySelectorAll('.live-clock-time').forEach(el => el.textContent = timeStr);
+    document.querySelectorAll('.live-clock-date').forEach(el => el.textContent = dateStr);
+  },
+  start: () => {
+    Clock.tick();
+    setInterval(Clock.tick, 1000);
+  }
+};
+
+// Auto-init theme and clock on load
+document.addEventListener('DOMContentLoaded', () => {
+  Theme.init();
+  Clock.start();
+});
 
 
 /* ══════════════════════════════════════════════════════════

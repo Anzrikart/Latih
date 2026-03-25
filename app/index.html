@@ -242,6 +242,10 @@
   <!-- ── Top bar ─────────────────────────────────────────── -->
   <header class="app-topbar">
     <div class="app-topbar-logo">Latih<span>.</span></div>
+    <div class="app-clock" style="text-align:right;margin-right:12px;line-height:1.2;">
+      <div class="live-clock-time" style="font-weight:700;font-size:14px;color:var(--text);">00:00:00</div>
+      <div class="live-clock-date" style="font-size:10px;color:var(--text3);">1 Jan 2026</div>
+    </div>
     <div class="app-user-info">
       <div class="avatar avatar-sm" id="topbarAvatar" style="background:var(--accent);">–</div>
       <span id="topbarName">Pelajar</span>
@@ -323,9 +327,6 @@
           <h3 id="profileName">–</h3>
           <p id="profileSchool" style="margin-bottom:4px;">–</p>
           <p><span class="badge-latih badge-accent" id="profileYear">–</span></p>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn-latih btn-secondary btn-sm" onclick="cycleTheme()" id="themeBtn">🎨 Tema</button>
         </div>
       </div>
 
@@ -519,23 +520,6 @@
 
     document.getElementById('gradesPhaseNote').textContent = grades.length > 0 ? `${grades.length} rekod` : '';
     if (typeof GradeChart !== 'undefined') GradeChart.init('gradesMount', _uid);
-    updateThemeBtn();
-  }
-
-  /* Theme cycling */
-  const THEMES = ['minimal', 'scifi', 'lcar', 'ascii'];
-  function cycleTheme() {
-    let current = Store.get('theme') || 'minimal';
-    let idx = THEMES.indexOf(current);
-    let next = THEMES[(idx + 1) % THEMES.length];
-    Theme.apply(next);
-    updateThemeBtn();
-    Sound.tap();
-  }
-  function updateThemeBtn() {
-    const current = Store.get('theme') || 'minimal';
-    const names = { minimal: 'Minimal', scifi: 'Sci-Fi', lcar: 'LCAR', ascii: 'ASCII' };
-    document.getElementById('themeBtn').textContent = '🎨 ' + names[current];
   }
 
   function confirmLogout() {
@@ -560,5 +544,10 @@
     if (typeof PaperEngine !== 'undefined') PaperEngine.init('paperEngineMount');
   })();
 </script>
+  <!-- Floating Theme Button -->
+  <button id="themeFab" class="theme-fab" onclick="Theme.cycle()" aria-label="Tukar Tema">
+    <span class="fab-icon">🎨</span>
+  </button>
 </body>
+
 </html>

@@ -26,6 +26,12 @@
   animation: bgPulse 8s infinite alternate;
 }
 
+.theme-scifi .live-clock-time {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+  font-family: monospace;
+}
+
 @keyframes bgPulse {
   from { opacity: 0.8; }
   to { opacity: 1; }
@@ -64,6 +70,12 @@
   background: #000;
 }
 
+.theme-lcar .live-clock-time {
+  color: var(--accent2);
+  font-family: 'Antonio', sans-serif;
+  font-size: 1.2rem !important;
+}
+
 .theme-lcar .btn-latih {
   border-radius: 40px;
   background: var(--accent);
@@ -99,6 +111,13 @@
   background: #000;
 }
 
+.theme-ascii .live-clock-time {
+  color: var(--accent);
+  background: rgba(0, 255, 65, 0.1);
+  padding: 2px 6px;
+  border: 1px solid var(--accent);
+}
+
 .theme-ascii body::after {
   content: "";
   position: fixed;
@@ -132,3 +151,63 @@
   border-radius: 0;
   border: 1px solid var(--accent);
 }
+
+/* ══════════════════════════════════════════════════════════
+   FLOATING ACTION BUTTON (FAB)
+   ══════════════════════════════════════════════════════════ */
+.theme-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+  animation: levitate 3s ease-in-out infinite;
+}
+
+.theme-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+.theme-fab:active {
+  transform: scale(0.9);
+}
+
+@keyframes levitate {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Theme specifics for FAB */
+.theme-scifi .theme-fab {
+  background: rgba(0, 242, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.5);
+}
+
+.theme-lcar .theme-fab {
+  border-radius: 12px;
+  background: var(--accent2);
+  border-right: 8px solid rgba(0,0,0,0.2);
+}
+
+.theme-ascii .theme-fab {
+  border-radius: 0;
+  background: #000;
+  border: 2px solid var(--accent);
+  animation: none;
+}
+
