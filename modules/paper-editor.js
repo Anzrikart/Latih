@@ -94,8 +94,9 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
     return `
 <div class="pe-shell">
   <div class="pe-list">
-    <div class="pe-list-head">
-      <span style="font-size:13px;font-weight:600;">Kertas</span>
+    <div class="pe-list-head" style="gap:4px;">
+      <span style="font-size:13px;font-weight:600;flex:1;">Kertas</span>
+      <button class="btn-latih btn-secondary btn-sm" onclick="PaperEditor.syncFromRegistry()" title="Imbas folder /papers/ dan muat turun kertas baru">Imbas</button>
       <button class="btn-latih btn-primary btn-sm" onclick="PaperEditor.newPaper()">＋ Baru</button>
     </div>
     <div class="pe-list-scroll" id="peListScroll"></div>
@@ -465,7 +466,74 @@ select.pe-ai{appearance:none;-webkit-appearance:none;background-image:url("data:
 
   function _upd(i, f, v) { if (_answers[i]) _answers[i][f] = v; }
 
+  /* ══════════════════════════════════════════════════════
+     SYNC FROM FILESYSTEM / REGISTRY
+  ══════════════════════════════════════════════════════ */
+  async function syncFromRegistry() {
+    Sound.tap();
+    toast('Mengimbas folder kertas...', 'info');
+    try {
+      const resp = await fetch('papers/list.json');
+      if (!resp.ok) throw new Error('Could not load papers/list.json');
+      const list = await resp.json();
+      
+      let newCount = 0;
+      const papers = Store.get('papers') || {};
+
+      for (const folder of list) {
+        try {
+          // Fetch rubric.json
+          const rResp = await fetch(`papers/${folder}/rubric.json`);
+          if (!rResp.ok) continue;
+          const rubric = await rResp.json();
+          
+          const id = rubric.paper_id || folder;
+          
+          // Only skip if already exists and we don't want to overwrite 
+          // (Actually, let's always sync to catch updates on disk)
+          
+          // Fetch question.md
+          const qResp = await fetch(`papers/${folder}/question.md`);
+          if (!qResp.ok) continue;
+          const md = await qResp.text();
+          
+          // Fetch answers.json
+          const aResp = await fetch(`papers/${folder}/answers.json`);
+          if (!aResp.ok) continue;
+          const ans = await aResp.json();
+          
+          papers[id] = {
+            id,
+            title:            rubric.title,
+            subject:          rubric.subject,
+            year:             rubric.year,
+            duration_minutes: rubric.duration_minutes,
+            total_marks:      rubric.total_marks,
+            difficulty:       rubric.difficulty,
+            tags:             rubric.tags,
+            published:        rubric.published ?? false,
+            created:          rubric.created || new Date().toISOString(),
+            author:           rubric.author || 'Sistem',
+            question_md:      md,
+            answers:          ans
+          };
+          newCount++;
+        } catch (e) {
+          console.error(`Error syncing ${folder}:`, e);
+        }
+      }
+      
+      Store.set('papers', papers);
+      renderList();
+      Sound.save();
+      toast(`Berjaya mengimbas ${newCount} kertas!`, 'success');
+    } catch (err) {
+      toast('Gagal mengimbas registry kertas.', 'error');
+      console.error(err);
+    }
+  }
+
   /* ── Public API ──────────────────────────────────────── */
   return { init, renderList, newPaper, edit, del, save, togglePublish, closeEditor,
-           wrap, wrapBlock, insertMermaid, insertMCQ, togglePreview, addRow, removeRow, _upd };
+           wrap, wrapBlock, insertMermaid, insertMCQ, togglePreview, addRow, removeRow, _upd, syncFromRegistry };
 })();
