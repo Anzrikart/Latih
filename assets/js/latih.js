@@ -52,7 +52,7 @@ const Theme = {
 
 /* ══════════════════════════════════════════════════════════
    Clock System — live time & date
-══════════════════════════════════════════════════════════ */
+════════════════════════════════════════════════════════════ */
 const Clock = {
   tick: () => {
     const now = new Date();
@@ -67,6 +67,36 @@ const Clock = {
     setInterval(Clock.tick, 1000);
   }
 };
+
+/* ══════════════════════════════════════════════════════════
+   Sound — Web Audio API tone engine (Sci-Fi Synth)
+══════════════════════════════════════════════════════════ */
+const Sound = (() => {
+  let ctx;
+  const init = () => { try { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} };
+  const tone = (freq, dur, type = 'sine', vol = 0.1) => {
+    init(); if (!ctx) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime);
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    o.start(); o.stop(ctx.currentTime + dur);
+  };
+  return {
+    tap:     () => tone(600, 0.1, 'sine', 0.05),
+    success: () => { tone(500, 0.3, 'triangle', 0.1); setTimeout(() => tone(1000, 0.3, 'triangle', 0.1), 100); },
+    error:   () => tone(150, 0.4, 'sawtooth', 0.08),
+    blip:    () => tone(1200, 0.05, 'square', 0.03),
+    play:    (type) => {
+      if (type === 'tap') Sound.tap();
+      if (type === 'success') Sound.success();
+      if (type === 'error') Sound.error();
+      if (type === 'blip') Sound.blip();
+    }
+  };
+})();
+
 
 // Auto-init theme and clock on load
 document.addEventListener('DOMContentLoaded', () => {
@@ -85,33 +115,20 @@ const Store = {
   currentUser: ()         => Store.get('session')?.current_user ?? null,
   currentRole: ()         => Store.get('session')?.role ?? null,
   userKey:     (key)      => key + '_' + Store.currentUser(),
-  requireRole: (role)     => { if (Store.currentRole() !== role) location.href = Latih.root; }
+  requireRole: (role) => {
+    if (Store.currentRole() !== role) {
+      location.href = Latih.root + 'index.html';
+    }
+  },
+  getRank: (score) => {
+    if (score >= 1000) return { title: 'Galactic Legend', badge: '👑' };
+    if (score >= 500)  return { title: 'Star Commander', badge: '⭐' };
+    if (score >= 200)  return { title: 'Space Ace', badge: '🚀' };
+    if (score >= 50)   return { title: 'Pilot', badge: '🛸' };
+    return { title: 'Novice Cadet', badge: '🧑‍🚀' };
+  }
 };
 
-/* ══════════════════════════════════════════════════════════
-   Sound — Web Audio API tone engine
-══════════════════════════════════════════════════════════ */
-const Sound = (() => {
-  let ctx;
-  const init = () => { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); };
-  const tone = (freq, dur, type = 'sine', vol = 0.15) => {
-    init();
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    o.start(); o.stop(ctx.currentTime + dur);
-  };
-  return {
-    tap:     () => tone(660, 0.06),
-    correct: () => { tone(880, 0.08); setTimeout(() => tone(1100, 0.10), 90); },
-    wrong:   () => tone(220, 0.18, 'sawtooth', 0.08),
-    submit:  () => [523, 659, 784].forEach((f, i) => setTimeout(() => tone(f, 0.12), i * 80)),
-    notify:  () => tone(740, 0.12, 'sine', 0.10),
-    save:    () => { tone(440, 0.06); setTimeout(() => tone(550, 0.08), 70); }
-  };
-})();
 
 /* ══════════════════════════════════════════════════════════
    toast — ephemeral notification pop-up

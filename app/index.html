@@ -235,9 +235,9 @@
     .grade-score { font-size: 13px; font-weight: 600; white-space: nowrap; }
   </style>
 </head>
-<body>
+<body class="theme-minimal">
 
-<div class="student-app">
+<main class="student-app section-warp" id="view-dashboard">
 
   <!-- ── Top bar ─────────────────────────────────────────── -->
   <header class="app-topbar">
@@ -326,7 +326,10 @@
         <div class="profile-info" style="flex:1;">
           <h3 id="profileName">–</h3>
           <p id="profileSchool" style="margin-bottom:4px;">–</p>
-          <p><span class="badge-latih badge-accent" id="profileYear">–</span></p>
+          <p style="display:flex;gap:6px;align-items:center;">
+             <span class="badge-latih badge-accent" id="profileYear">–</span>
+             <span id="rankBadge" class="badge-latih" style="background:rgba(255,255,255,0.1);border:1px solid var(--accent);color:var(--accent);">🧑‍🚀 Novice</span>
+          </p>
         </div>
       </div>
 
@@ -382,7 +385,7 @@
     </button>
   </nav>
 
-</div><!-- /student-app -->
+</main><!-- /student-app -->
 
 <!-- ── Confirm logout modal ───────────────────────────── -->
 <div class="modal-overlay" id="logoutModal" onclick="handleModalBackdrop(event)">
@@ -417,6 +420,36 @@
   const _uid   = Store.currentUser();
   const _users = Store.get('users') || {};
   const _me    = _users[_uid] || {};
+
+  /* ══════════════════════════════════════════════════════
+     AI TUTOR LOGIC
+  ══════════════════════════════════════════════════════ */
+  const AI_PHRASES = [
+    "Teruskan usaha, Commander!",
+    "Latihan hari ini kunci kejayaan esok.",
+    "Jangan lupa minum air while coding/learning!",
+    "Rank ace menanti anda!",
+    "Setiap soalan adalah satu langkah ke angkasa.",
+    "Wah, avatar anda nampak hebat!",
+    "Baki 5 minit untuk latihan hari ini?"
+  ];
+
+  function saySomething() {
+    const bubble = document.getElementById('aiBubble');
+    const msg = AI_PHRASES[Math.floor(Math.random() * AI_PHRASES.length)];
+    bubble.textContent = msg;
+    bubble.style.opacity = '1';
+    bubble.style.transform = 'translateX(0)';
+    Sound.play('blip');
+    
+    setTimeout(() => {
+      bubble.style.opacity = '0';
+      bubble.style.transform = 'translateX(10px)';
+    }, 4000);
+  }
+
+  // Periodic greeting
+  setTimeout(() => { if (Math.random() > 0.5) saySomething(); }, 5000);
 
   /* ══════════════════════════════════════════════════════
      TAB NAVIGATION
@@ -468,9 +501,12 @@
     document.getElementById('profileName').textContent   = _me.name   || '—';
     document.getElementById('profileSchool').textContent = _me.school  || '—';
     document.getElementById('profileYear').textContent   = _me.year ? 'Tahun ' + _me.year : '—';
-    document.getElementById('profileAvatar').textContent = _me.name ? getInitials(_me.name) : '?';
-    document.getElementById('profileAvatar').style.background = _me.avatar_color || 'var(--accent)';
-
+    
+    // Update Rank
+    const score = _me.total_score || 0;
+    const rank = Store.getRank(score);
+    document.getElementById('rankBadge').textContent = rank.badge + ' ' + rank.title;
+    
     const grades = Store.get('grades_' + _uid) || [];
     document.getElementById('statPapers').textContent = grades.length;
 
@@ -544,7 +580,12 @@
     if (typeof PaperEngine !== 'undefined') PaperEngine.init('paperEngineMount');
   })();
 </script>
-  <!-- Floating Theme Button -->
+  <!-- AI Tutor Mascot -->
+  <div id="aiTutor" class="ai-tutor" onclick="saySomething()">
+    <img src="../assets/img/avatars/holo_ai.png" alt="Holo AI">
+    <div class="ai-bubble" id="aiBubble">Selamat datang, Commander!</div>
+  </div>
+
   <button id="themeFab" class="theme-fab" onclick="Theme.cycle()" aria-label="Tukar Tema">
     <span class="fab-icon">🎨</span>
   </button>

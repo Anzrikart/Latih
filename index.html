@@ -157,64 +157,11 @@
     <span class="fab-icon">🎨</span>
   </button>
 
+  <script src="assets/js/latih.js"></script>
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <script>
     /* ══════════════════════════════════════════════
-       Store
-    ══════════════════════════════════════════════ */
-    const Store = {
-      get:         (key)      => { try { return JSON.parse(localStorage.getItem('latih_' + key)); } catch { return null; } },
-      set:         (key, val) => localStorage.setItem('latih_' + key, JSON.stringify(val)),
-      del:         (key)      => localStorage.removeItem('latih_' + key),
-      currentUser: ()         => Store.get('session')?.current_user ?? null,
-      currentRole: ()         => Store.get('session')?.role ?? null,
-      userKey:     (key)      => key + '_' + Store.currentUser(),
-      requireRole: (role)     => { if (Store.currentRole() !== role) location.href = './'; }
-    };
-
-    /* ══════════════════════════════════════════════
-       Sound
-    ══════════════════════════════════════════════ */
-    const Sound = (() => {
-      let ctx;
-      const init = () => { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); };
-      const tone = (freq, dur, type = 'sine', vol = 0.15) => {
-        init();
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.type = type; o.frequency.value = freq;
-        g.gain.setValueAtTime(vol, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-        o.start(); o.stop(ctx.currentTime + dur);
-      };
-      return {
-        tap:     () => tone(660, 0.06),
-        correct: () => { tone(880, 0.08); setTimeout(() => tone(1100, 0.10), 90); },
-        wrong:   () => tone(220, 0.18, 'sawtooth', 0.08),
-        submit:  () => [523, 659, 784].forEach((f, i) => setTimeout(() => tone(f, 0.12), i * 80)),
-        notify:  () => tone(740, 0.12, 'sine', 0.10),
-        save:    () => { tone(440, 0.06); setTimeout(() => tone(550, 0.08), 70); }
-      };
-    })();
-
-    /* ══════════════════════════════════════════════
-       Toast
-    ══════════════════════════════════════════════ */
-    function toast(msg, type = 'info') {
-      const colors = { info: '#2B5CE6', success: '#1A7A4A', error: '#C0392B', warning: '#B45309' };
-      const t = document.createElement('div');
-      t.style.cssText = `position:fixed;bottom:24px;right:20px;background:${colors[type]};color:white;
-        padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;
-        opacity:0;transform:translateY(8px);transition:all 0.2s;pointer-events:none;
-        box-shadow:0 4px 16px rgba(0,0,0,0.15);font-family:'DM Sans',sans-serif;`;
-      t.textContent = msg;
-      document.body.appendChild(t);
-      requestAnimationFrame(() => { t.style.opacity = '1'; t.style.transform = 'translateY(0)'; });
-      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 200); }, 2500);
-    }
-
-    /* ══════════════════════════════════════════════
-       Helpers
+       Helpers (Local overrides if needed)
     ══════════════════════════════════════════════ */
     function escHtml(s) {
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
