@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ms">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -24,17 +25,34 @@
       box-shadow: var(--shadow);
       transition: all var(--transition);
     }
-    .admin-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent); }
-    .admin-card-label { font-size: 13px; color: var(--text2); margin-bottom: 2px; }
-    .admin-card-title { font-weight: 600; font-size: 15px; color: var(--text); }
+
+    .admin-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .admin-card-label {
+      font-size: 13px;
+      color: var(--text2);
+      margin-bottom: 2px;
+    }
+
+    .admin-card-title {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text);
+    }
   </style>
 </head>
+
 <body class="login-page">
 
   <!-- ── Header ─────────────────────────────────────────── -->
   <header class="login-header">
     <div class="latih-logo">Latih<span>.</span></div>
-    <div class="app-clock" style="font-family:'DM Sans',sans-serif;font-size:12px;display:flex;flex-direction:column;align-items:flex-end;">
+    <div class="app-clock"
+      style="font-family:'DM Sans',sans-serif;font-size:12px;display:flex;flex-direction:column;align-items:flex-end;">
       <span class="live-clock-time" style="font-weight:700;font-size:14px;">00:00:00</span>
       <span class="live-clock-date" style="opacity:0.7;">1 Jan 2026</span>
     </div>
@@ -71,15 +89,18 @@
 
     <!-- Add student form -->
     <div class="add-student-form glass-panel" id="addStudentForm" style="display:none;">
-      <h2 style="font-size:1rem;font-weight:600;margin-bottom:16px;font-family:'DM Sans',sans-serif;">Profil Pelajar Baru</h2>
+      <h2 style="font-size:1rem;font-weight:600;margin-bottom:16px;font-family:'DM Sans',sans-serif;">Profil Pelajar
+        Baru</h2>
       <div class="form-latih">
         <div class="form-group">
           <label class="form-label" for="studentName">Nama Penuh</label>
-          <input type="text" id="studentName" class="form-control-latih" placeholder="Contoh: Ahmad Faris" autocomplete="off">
+          <input type="text" id="studentName" class="form-control-latih" placeholder="Contoh: Ahmad Faris"
+            autocomplete="off">
         </div>
         <div class="form-group">
           <label class="form-label" for="studentSchool">Sekolah</label>
-          <input type="text" id="studentSchool" class="form-control-latih" placeholder="Nama sekolah" autocomplete="off">
+          <input type="text" id="studentSchool" class="form-control-latih" placeholder="Nama sekolah"
+            autocomplete="off">
         </div>
         <div class="form-group">
           <label class="form-label" for="studentYear">Tahun</label>
@@ -96,9 +117,10 @@
         <div class="form-group">
           <label class="form-label">Warna Avatar</label>
           <div class="colour-swatches" id="colourSwatches" style="margin-bottom:12px;"></div>
-          
+
           <label class="form-label">Ikon Avatar (Sci-Fi)</label>
-          <div class="avatar-picker" id="avatarPicker" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;"></div>
+          <div class="avatar-picker" id="avatarPicker"
+            style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;"></div>
         </div>
         <div style="display:flex;gap:10px;padding-top:4px;">
           <button class="btn-latih btn-primary" style="flex:1;" onclick="saveNewStudent()">Simpan Profil</button>
@@ -113,7 +135,8 @@
     <!-- Empty state -->
     <div class="onboarding-empty" id="onboardingEmpty" style="display:none;">
       <div class="onboarding-icon">🎒</div>
-      <p><strong>Selamat datang ke Latih!</strong><br>Buat profil pertama anda dengan mengetik <em>Tambah Pelajar</em> di atas.</p>
+      <p><strong>Selamat datang ke Latih!</strong><br>Buat profil pertama anda dengan mengetik <em>Tambah Pelajar</em>
+        di atas.</p>
     </div>
 
   </div>
@@ -125,10 +148,14 @@
       <p class="modal-subtitle" id="pinModalSubtitle">Masukkan PIN 4 digit anda.</p>
 
       <div class="pin-row">
-        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p0" oninput="pinInput(0)" onkeydown="pinKeydown(event,0)">
-        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p1" oninput="pinInput(1)" onkeydown="pinKeydown(event,1)">
-        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p2" oninput="pinInput(2)" onkeydown="pinKeydown(event,2)">
-        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p3" oninput="pinInput(3)" onkeydown="pinKeydown(event,3)">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p0" oninput="pinInput(0)"
+          onkeydown="pinKeydown(event,0)">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p1" oninput="pinInput(1)"
+          onkeydown="pinKeydown(event,1)">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p2" oninput="pinInput(2)"
+          onkeydown="pinKeydown(event,2)">
+        <input class="pin-digit" type="password" inputmode="numeric" maxlength="1" id="p3" oninput="pinInput(3)"
+          onkeydown="pinKeydown(event,3)">
       </div>
 
       <p id="pinError" style="font-size:13px;color:var(--red);text-align:center;margin-top:10px;min-height:18px;"></p>
@@ -165,7 +192,7 @@
        Helpers (Local overrides if needed)
     ══════════════════════════════════════════════ */
     function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
     function getInitials(name) {
       return name.trim().split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -182,7 +209,7 @@
     let selectedColour = AVATAR_COLOURS[0];
 
     const SCIFI_AVATARS = [
-      'robot_blue.png', 'space_cat.png', 'astro_boy.png', 
+      'robot_blue.png', 'space_cat.png', 'astro_boy.png',
       'astro_girl.png', 'holo_ai.png', 'alien_green.png'
     ];
     let selectedAvatarImg = '';
@@ -228,10 +255,10 @@
        Render students
     ══════════════════════════════════════════════ */
     function renderStudents() {
-      const grid  = document.getElementById('studentGrid');
+      const grid = document.getElementById('studentGrid');
       const empty = document.getElementById('onboardingEmpty');
       const users = Store.get('users') || {};
-      const keys  = Object.keys(users);
+      const keys = Object.keys(users);
 
       grid.innerHTML = '';
 
@@ -243,10 +270,10 @@
 
       keys.forEach(id => {
         const u = users[id];
-        const avatarContent = u.avatar_img 
+        const avatarContent = u.avatar_img
           ? `<img src="assets/img/avatars/${escHtml(u.avatar_img)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
           : escHtml(getInitials(u.name));
-        
+
         const card = document.createElement('div');
         card.className = 'student-card';
         card.setAttribute('role', 'button');
@@ -257,7 +284,7 @@
           <div class="student-name">${escHtml(u.name)}</div>
           <div class="student-meta">Tahun ${escHtml(String(u.year))}</div>
           <button class="btn-latih btn-danger btn-sm" style="margin-top:4px;"
-            onclick="event.stopPropagation();promptDelete('${escHtml(id)}','${escHtml(u.name).replace(/'/g,"\\'")}')"
+            onclick="event.stopPropagation();promptDelete('${escHtml(id)}','${escHtml(u.name).replace(/'/g, "\\'")}')"
             type="button">Padam</button>
         `;
         card.addEventListener('click', () => loginStudent(id));
@@ -274,7 +301,7 @@
         Sound.tap();
         Auth.loginStudent(id);
         location.href = 'app/index.html';
-      } catch(e) { console.error('Login error:', e); }
+      } catch (e) { console.error('Login error:', e); }
     }
 
     /* ══════════════════════════════════════════════
@@ -287,20 +314,20 @@
         Sound.tap();
         addFormOpen = !addFormOpen;
         const form = document.getElementById('addStudentForm');
-        const btn  = document.getElementById('addStudentToggleBtn');
+        const btn = document.getElementById('addStudentToggleBtn');
         form.style.display = addFormOpen ? 'block' : 'none';
-        btn.textContent    = addFormOpen ? '✕ Tutup' : '＋ Tambah Pelajar';
+        btn.textContent = addFormOpen ? '✕ Tutup' : '＋ Tambah Pelajar';
         if (addFormOpen) {
           resetAddForm();
           document.getElementById('studentName').focus();
         }
-      } catch(e) { console.error('Toggle form error:', e); }
+      } catch (e) { console.error('Toggle form error:', e); }
     }
 
     function resetAddForm() {
-      document.getElementById('studentName').value   = '';
+      document.getElementById('studentName').value = '';
       document.getElementById('studentSchool').value = '';
-      document.getElementById('studentYear').value   = '';
+      document.getElementById('studentYear').value = '';
       selectedColour = AVATAR_COLOURS[0];
       selectedAvatarImg = '';
       document.querySelectorAll('.colour-swatch').forEach((s, i) =>
@@ -311,23 +338,23 @@
     function saveNewStudent() {
       try {
         Sound.tap();
-        const name   = document.getElementById('studentName').value.trim();
+        const name = document.getElementById('studentName').value.trim();
         const school = document.getElementById('studentSchool').value.trim();
-        const year   = document.getElementById('studentYear').value;
+        const year = document.getElementById('studentYear').value;
 
-        if (!name)   { toast('Sila masukkan nama pelajar.', 'error');  return; }
-        if (!school) { toast('Sila masukkan nama sekolah.', 'error');  return; }
-        if (!year)   { toast('Sila pilih tahun pelajaran.', 'error'); return; }
+        if (!name) { toast('Sila masukkan nama pelajar.', 'error'); return; }
+        if (!school) { toast('Sila masukkan nama sekolah.', 'error'); return; }
+        if (!year) { toast('Sila pilih tahun pelajaran.', 'error'); return; }
 
         const users = Store.get('users') || {};
-        const id    = 'user_' + Date.now();
-        users[id]   = { id, name, school, year: parseInt(year), avatar_color: selectedColour, avatar_img: selectedAvatarImg, created: new Date().toISOString() };
+        const id = 'user_' + Date.now();
+        users[id] = { id, name, school, year: parseInt(year), avatar_color: selectedColour, avatar_img: selectedAvatarImg, created: new Date().toISOString() };
         Store.set('users', users);
         Sound.save();
         toast(`Profil ${name} disimpan!`, 'success');
         toggleAddForm();
         renderStudents();
-      } catch(e) { console.error('Save student error:', e); toast('Gagal menyimpan profil.', 'error'); }
+      } catch (e) { console.error('Save student error:', e); toast('Gagal menyimpan profil.', 'error'); }
     }
 
     /* ══════════════════════════════════════════════
@@ -349,13 +376,13 @@
         const users = Store.get('users') || {};
         delete users[_deleteTargetId];
         Store.set('users', users);
-        ['grades_','kanban_','memos_','reminders_','timetable_'].forEach(prefix =>
+        ['grades_', 'kanban_', 'memos_', 'reminders_', 'timetable_'].forEach(prefix =>
           Store.del(prefix + _deleteTargetId));
         _deleteTargetId = null;
         closeModal('deleteModal');
         toast('Profil dipadam.', 'info');
         renderStudents();
-      } catch(e) { console.error('Delete error:', e); }
+      } catch (e) { console.error('Delete error:', e); }
     }
 
     /* ══════════════════════════════════════════════
@@ -383,18 +410,18 @@
         const stored = Store.get('admin_pin');
         if (!stored) {
           pinMode = 'setup';
-          document.getElementById('pinModalTitle').textContent    = 'Tetapkan PIN Pentadbir';
+          document.getElementById('pinModalTitle').textContent = 'Tetapkan PIN Pentadbir';
           document.getElementById('pinModalSubtitle').textContent = 'Cipta PIN 4 digit untuk akaun pentadbir.';
-          document.getElementById('pinSubmitBtn').textContent     = 'Teruskan';
+          document.getElementById('pinSubmitBtn').textContent = 'Teruskan';
         } else {
           pinMode = 'login';
-          document.getElementById('pinModalTitle').textContent    = 'Masuk sebagai Pentadbir';
+          document.getElementById('pinModalTitle').textContent = 'Masuk sebagai Pentadbir';
           document.getElementById('pinModalSubtitle').textContent = 'Masukkan PIN 4 digit anda.';
-          document.getElementById('pinSubmitBtn').textContent     = 'Masuk';
+          document.getElementById('pinSubmitBtn').textContent = 'Masuk';
         }
         openModal('pinModal');
         setTimeout(() => document.getElementById('p0').focus(), 120);
-      } catch(e) { console.error('Open admin error:', e); }
+      } catch (e) { console.error('Open admin error:', e); }
     }
 
     function pinInput(idx) {
@@ -435,9 +462,9 @@
         } else if (pinMode === 'setup') {
           _setupPin = pin;
           pinMode = 'setup2';
-          document.getElementById('pinModalTitle').textContent    = 'Sahkan PIN Anda';
+          document.getElementById('pinModalTitle').textContent = 'Sahkan PIN Anda';
           document.getElementById('pinModalSubtitle').textContent = 'Masukkan semula PIN untuk pengesahan.';
-          document.getElementById('pinSubmitBtn').textContent     = 'Simpan PIN';
+          document.getElementById('pinSubmitBtn').textContent = 'Simpan PIN';
           clearPinInputs();
           document.getElementById('p0').focus();
 
@@ -456,19 +483,19 @@
           Auth.loginAdmin();
           location.href = 'admin/index.html';
         }
-      } catch(e) { console.error('Submit PIN error:', e); }
+      } catch (e) { console.error('Submit PIN error:', e); }
     }
 
     /* ══════════════════════════════════════════════
        Modal helpers
     ══════════════════════════════════════════════ */
-    function openModal(id)  { document.getElementById(id).classList.add('visible'); }
+    function openModal(id) { document.getElementById(id).classList.add('visible'); }
     function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
     function handleModalBackdrop(e) { if (e.target === e.currentTarget) closeModal(e.currentTarget.id); }
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape')
-        ['pinModal','deleteModal'].forEach(id => closeModal(id));
+        ['pinModal', 'deleteModal'].forEach(id => closeModal(id));
     });
 
     /* ═════════════════════
@@ -478,14 +505,15 @@
       try {
         if (!Store.get('admin_pin')) {
           const cardTitle = document.getElementById('adminCardTitle');
-          const adminBtn  = document.getElementById('adminBtn');
+          const adminBtn = document.getElementById('adminBtn');
           if (cardTitle) cardTitle.textContent = 'Tetapkan PIN Pentadbir';
-          if (adminBtn)  adminBtn.textContent       = 'Tetapkan PIN';
+          if (adminBtn) adminBtn.textContent = 'Tetapkan PIN';
         }
         initSwatches();
         renderStudents();
-      } catch(e) { console.error('Init error:', e); }
+      } catch (e) { console.error('Init error:', e); }
     })();
   </script>
 </body>
+
 </html>
